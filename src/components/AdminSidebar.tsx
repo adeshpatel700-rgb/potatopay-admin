@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BarChart3, ClipboardCheck, LogOut, Menu, Users, X } from "lucide-react";
+import { BarChart3, ClipboardCheck, LineChart, LogOut, Menu, Users, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { apiRequest } from "@/lib/api-client";
@@ -9,6 +9,7 @@ import { useAdminSession } from "@/components/AdminAuthGate";
 
 const NAV = [
   { href: "/", label: "Overview", icon: BarChart3 },
+  { href: "/analytics", label: "Analytics", icon: LineChart },
   { href: "/creators", label: "Creators", icon: Users },
   { href: "/supporters", label: "Supporters", icon: Users },
   { href: "/kyc", label: "KYC review", icon: ClipboardCheck },
