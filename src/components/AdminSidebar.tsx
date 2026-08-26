@@ -28,7 +28,9 @@ function NavContent({ close }: { close?: () => void }) {
 }
 
 export function AdminSidebar() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  if (pathname === "/login") return null;
   return <>
     <button type="button" className="mobile-menu" onClick={() => setOpen(true)} aria-label="Open admin navigation"><Menu size={18} /></button>
     {open && <><button type="button" className="scrim" onClick={() => setOpen(false)} aria-label="Close navigation" /><aside className="sidebar mobile-sidebar"><button type="button" className="close-menu" onClick={() => setOpen(false)} aria-label="Close admin navigation"><X size={18} /></button><NavContent close={() => setOpen(false)} /></aside></>}
