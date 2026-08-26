@@ -96,6 +96,19 @@ tbody tr:last-child td { border-bottom: 0; }
 .button.approve { background: #18794e; border-color: #18794e; color: #fff; }
 .button.reject { background: #b42318; border-color: #b42318; color: #fff; }
 .center-state { min-height: 100vh; display: grid; place-items: center; padding: 24px; color: var(--muted); text-align: center; }
+
+/* Sign-in. The console has its own, because the creator app's session cookie
+   belongs to a different hostname and is never sent here. */
+.login-card { width: min(340px, 100%); background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 28px 26px 24px; text-align: left; box-shadow: 0 1px 2px rgb(17 24 39 / 4%), 0 8px 24px rgb(17 24 39 / 6%); }
+.login-mark { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: #f3f4f6; color: var(--ink); margin-bottom: 16px; }
+.login-card h1 { margin: 0; font-size: 20px; letter-spacing: -.02em; color: var(--ink); }
+.login-card p { margin: 6px 0 20px; font-size: 13px; color: var(--muted); }
+.login-card label { display: block; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.login-card input { width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 12px; font-size: 14px; margin-bottom: 16px; background: #fff; color: var(--ink); }
+.login-card input:focus { outline: 0; border-color: #9ca3af; box-shadow: 0 0 0 3px rgb(17 24 39 / 6%); }
+.login-card button { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 8px; background: var(--ink); color: #fff; padding: 11px 14px; font-size: 13px; font-weight: 700; }
+.login-card button:disabled { opacity: .45; cursor: not-allowed; }
+.login-error { margin: -4px 0 14px; padding: 9px 11px; border-radius: 8px; border: 1px solid #fecaca; background: #fef2f2; color: #b91c1c; font-size: 12px; }
 .center-state h1 { color: var(--ink); font-size: 24px; }
 .center-state p { font-size: 14px; }
 .center-state button { border: 0; border-radius: 7px; background: var(--ink); color: #fff; padding: 9px 14px; font-size: 12px; font-weight: 700; }
