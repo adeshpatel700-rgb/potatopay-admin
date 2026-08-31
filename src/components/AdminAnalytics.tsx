@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { RefreshCw, TrendingDown, TrendingUp } from "lucide-react";
 import { apiRequest, formatInr } from "@/lib/api-client";
 import type { Analytics, SectionId } from "@/lib/analytics-types";
@@ -75,19 +75,34 @@ export default function AdminAnalytics() {
   const [error, setError] = useState("");
 
   /**
+   * Which request is the current one.
+   *
+   * The 90-day query is by far the slowest, so clicking 90 and then 7 is the
+   * ordering that actually happens: 7 returns first, 90 lands afterwards and
+   * overwrites it, and the page then shows three months of data under a
+   * highlighted "7 days" button. Silent, plausible, and wrong — the worst kind
+   * of wrong for a page whose entire job is reporting numbers.
+   */
+  const requestId = useRef(0);
+
+  /**
    * One request per range, and switching sections costs nothing — the whole
    * payload is already here. That is the point of the single endpoint.
    */
   const load = useCallback(
     async (forceRefresh = false) => {
+      const token = ++requestId.current;
       setLoading(true);
       setError("");
       try {
-        setData(await apiRequest<Analytics>(`/v1/admin/analytics?range=${range}${forceRefresh ? "&refresh=1" : ""}`));
+        const response = await apiRequest<Analytics>(`/v1/admin/analytics?range=${range}${forceRefresh ? "&refresh=1" : ""}`);
+        if (requestId.current !== token) return;
+        setData(response);
       } catch (requestError) {
+        if (requestId.current !== token) return;
         setError(requestError instanceof Error ? requestError.message : "Could not load analytics.");
       } finally {
-        setLoading(false);
+        if (requestId.current === token) setLoading(false);
       }
     },
     [range],
