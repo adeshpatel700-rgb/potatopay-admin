@@ -176,3 +176,22 @@ tbody tr:last-child td { border-bottom: 0; }
 .mobile-menu, .scrim, .mobile-sidebar { display: none; }
 @media (max-width: 900px) { .content { padding: 76px 20px 44px; } .desktop-sidebar { display: none; } .mobile-menu { display: grid; place-items: center; position: fixed; z-index: 30; top: 16px; left: 16px; width: 40px; height: 40px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; color: var(--ink); } .scrim { display: block; position: fixed; inset: 0; z-index: 40; border: 0; background: rgb(17 24 39 / 20%); } .mobile-sidebar { display: flex; position: fixed; inset: 0 auto 0 0; z-index: 50; height: 100vh; box-shadow: 12px 0 30px rgb(17 24 39 / 10%); } .close-menu { position: absolute; top: 14px; right: 12px; border: 0; background: transparent; color: var(--muted); } .grid-2, .kyc-layout { grid-template-columns: 1fr; } .stats { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .page-head { align-items: flex-start; flex-direction: column; } .page-head h1 { font-size: 27px; } .stats { grid-template-columns: 1fr 1fr; gap: 14px; } .stat:nth-child(odd) { border-left: 0; padding-left: 0; } .stat strong { font-size: 21px; } .card { padding: 16px; } .detail-grid { grid-template-columns: 1fr; } }
+
+
+/* ---- creator account controls ------------------------------------------- */
+.drawer-scrim { position: fixed; inset: 0; z-index: 60; display: flex; justify-content: flex-end; background: rgba(17, 24, 39, .38); }
+.drawer { width: min(560px, 100%); height: 100%; overflow-y: auto; background: #fff; border-left: 1px solid var(--line); padding: 22px; }
+.reason-label { display: block; margin-top: 18px; color: #66717c; font-size: 12px; font-weight: 700; }
+.control-list { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
+.control-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+.control-row.restricted { border-color: #fecaca; background: #fef7f7; }
+.control-copy { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
+.control-copy strong { font-size: 13px; }
+.control-copy small { flex-basis: 100%; color: #66717c; font-size: 11px; line-height: 1.5; }
+.control-since { color: #b42318 !important; font-weight: 600; }
+.drawer-note { margin-top: 16px; border-left: 2px solid var(--line); padding-left: 12px; color: #66717c; font-size: 11px; line-height: 1.6; }
+.event-log { margin-top: 22px; border-top: 1px solid var(--line); padding-top: 16px; }
+.event-log strong { font-size: 12px; }
+.event-log ul { margin: 10px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 9px; }
+.event-log li { display: flex; flex-direction: column; gap: 4px; }
+.event-log small { color: #66717c; font-size: 11px; line-height: 1.5; }
