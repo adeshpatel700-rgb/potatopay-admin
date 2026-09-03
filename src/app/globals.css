@@ -195,3 +195,19 @@ tbody tr:last-child td { border-bottom: 0; }
 .event-log ul { margin: 10px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 9px; }
 .event-log li { display: flex; flex-direction: column; gap: 4px; }
 .event-log small { color: #66717c; font-size: 11px; line-height: 1.5; }
+
+
+/* ---- bank review + event inspector ------------------------------------- */
+.filter-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 20px; }
+.search-field { display: inline-flex; align-items: center; gap: 8px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; padding: 0 12px; min-width: 260px; flex: 1 1 260px; color: #6b7280; }
+.search-field input { border: 0; outline: 0; background: transparent; padding: 10px 0; font-size: 12px; font-weight: 600; color: #374151; width: 100%; }
+.warn-box { display: flex; align-items: flex-start; gap: 10px; margin-top: 18px; border: 1px solid #fecaca; background: #fef7f7; border-radius: 10px; padding: 13px 14px; color: #b42318; }
+.warn-box strong { display: block; font-size: 12px; }
+.warn-box small { display: block; margin-top: 4px; color: #7f4a45; font-size: 11px; line-height: 1.55; }
+.stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 20px; }
+.stat { border: 1px solid var(--line); border-radius: 11px; background: #fff; padding: 15px; }
+.stat label { display: flex; align-items: center; gap: 5px; color: #66717c; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+.stat strong { display: block; margin-top: 9px; font-size: 25px; letter-spacing: -.02em; }
+.stat strong.danger { color: #b42318; }
+.stat small { display: block; margin-top: 4px; color: #66717c; font-size: 11px; }
+.payload { margin-top: 10px; max-height: 46vh; overflow: auto; border: 1px solid var(--line); border-radius: 9px; background: #f9fafb; padding: 13px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
