@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BarChart3, ClipboardCheck, Landmark, LineChart, LogOut, Menu, Users, Webhook, X } from "lucide-react";
+import { BarChart3, ClipboardCheck, Landmark, LifeBuoy, LineChart, LogOut, Menu, Users, Webhook, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { apiRequest } from "@/lib/api-client";
@@ -15,6 +15,7 @@ const NAV = [
   { href: "/kyc", label: "KYC review", icon: ClipboardCheck },
   { href: "/bank", label: "Bank review", icon: Landmark },
   { href: "/events", label: "Provider events", icon: Webhook },
+  { href: "/support", label: "Support", icon: LifeBuoy },
 ];
 
 function NavContent({ close }: { close?: () => void }) {

@@ -211,3 +211,15 @@ tbody tr:last-child td { border-bottom: 0; }
 .stat strong.danger { color: #b42318; }
 .stat small { display: block; margin-top: 4px; color: #66717c; font-size: 11px; }
 .payload { margin-top: 10px; max-height: 46vh; overflow: auto; border: 1px solid var(--line); border-radius: 9px; background: #f9fafb; padding: 13px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
+
+
+/* ---- support threads ----------------------------------------------------- */
+.thread { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; max-height: 46vh; overflow-y: auto; padding-right: 4px; }
+.bubble { border: 1px solid var(--line); border-radius: 10px; background: #fff; padding: 12px 14px; }
+.bubble.from-admin { background: #f6f8fb; border-color: #dbe3ef; }
+/* An internal note has to be unmistakable at a glance: an operator scanning a
+   thread must never mistake one for something the creator has read. */
+.bubble.internal { background: #fffbeb; border-color: #fcd34d; border-left: 3px solid #d97706; }
+.bubble-meta { display: flex; align-items: center; gap: 4px; color: #66717c; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+.bubble p { margin: 8px 0 0; font-size: 13px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+.internal-toggle { display: inline-flex; align-items: center; gap: 7px; margin-top: 12px; color: #66717c; font-size: 12px; font-weight: 600; }
