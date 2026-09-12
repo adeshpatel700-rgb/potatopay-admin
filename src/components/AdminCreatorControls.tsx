@@ -79,6 +79,13 @@ export default function AdminCreatorControls({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
+  // ...and the table must not scroll away underneath it while it is open.
+  useEffect(() => {
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = previous; };
+  }, []);
+
   async function apply(action: AdminAction) {
     if (RESTRICTING.has(action) && reason.trim().length < 5) {
       setError("Write a reason of at least 5 characters before restricting an account.");
@@ -149,8 +156,16 @@ export default function AdminCreatorControls({
   ];
 
   return (
-    <div className="drawer-scrim" role="dialog" aria-modal="true" aria-label={`Controls for @${creator.username}`}>
-      <div className="drawer">
+    /* Clicking the dimmed area closes, which is the one thing every operator
+       tries first when a panel covers the row they were reading. */
+    <div className="drawer-scrim" role="presentation" onClick={onClose}>
+      <div
+        className="drawer"
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Controls for @${creator.username}`}
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className="card-title">
           <div>
             <p className="eyebrow">Account controls</p>

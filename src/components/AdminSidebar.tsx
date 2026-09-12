@@ -20,12 +20,20 @@ const NAV = [
 
 function NavContent({ close }: { close?: () => void }) {
   const pathname = usePathname(); const router = useRouter(); const session = useAdminSession(); const [busy, setBusy] = useState(false);
-  async function logout() { setBusy(true); await apiRequest("/v1/auth/logout", { method: "POST" }).catch(() => undefined); router.replace("/"); }
+  // "/" is the console overview, which sits behind the gate this sign-out just
+  // invalidated: it answered 401 and parked the operator on an interstitial
+  // whose only button was "Go to sign in". Go there directly.
+  async function logout() { setBusy(true); await apiRequest("/v1/auth/logout", { method: "POST" }).catch(() => undefined); router.replace("/login"); }
   return <>
     <div className="brand"><span className="brand-mark" aria-hidden="true">🥔</span><div><strong>Potatopay</strong><small>Admin console</small></div></div>
     <div className="rule" />
     <p className="eyebrow nav-label">Manage</p>
-    <nav aria-label="Admin navigation" className="nav-list">{NAV.map(({ href, label, icon: Icon }) => { const active = href === "/" ? pathname === href : pathname.startsWith(href); return <Link key={href} href={href} onClick={close} className={`nav-link ${active ? "active" : ""}`} aria-current={active ? "page" : undefined}><Icon size={17} />{label}</Link>; })}</nav>
+    <nav aria-label="Admin navigation" className="nav-list">{NAV.map(({ href, label, icon: Icon }) => {
+      // Whole segments only. A bare startsWith made "/supporters" match
+      // "/support", so the Supporters screen lit up two navigation items.
+      const active = href === "/" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
+      return <Link key={href} href={href} onClick={close} className={`nav-link ${active ? "active" : ""}`} aria-current={active ? "page" : undefined}><Icon size={17} />{label}</Link>;
+    })}</nav>
     <div className="sidebar-foot"><p className="signed-in">Signed in as <strong>@{session.username}</strong></p><button type="button" className="nav-link logout" disabled={busy} onClick={() => void logout()}><LogOut size={16} />{busy ? "Signing out…" : "Sign out"}</button></div>
   </>;
 }

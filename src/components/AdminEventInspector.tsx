@@ -100,10 +100,18 @@ export default function AdminEventInspector() {
     }
   }, [provider, eventType, status, search, offset]);
 
+  /**
+   * Typing is debounced; the dropdowns are not.
+   *
+   * The placeholder invites an operator to paste a payment id, and pasting is
+   * one event — but typing one out fired a query against the webhook event
+   * table per character, and that table is the largest thing in the database.
+   */
+  const searchTerm = search.trim();
   useEffect(() => {
-    const timer = window.setTimeout(() => void load(), 0);
+    const timer = window.setTimeout(() => void load(), searchTerm ? 350 : 0);
     return () => window.clearTimeout(timer);
-  }, [load]);
+  }, [load, searchTerm]);
 
   async function openEvent(id: string) {
     setError("");

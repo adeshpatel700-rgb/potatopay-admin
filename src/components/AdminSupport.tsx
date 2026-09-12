@@ -91,13 +91,26 @@ export default function AdminSupport() {
     }
   }, [filter, search]);
 
+  /**
+   * Typing is debounced; the filter buttons are not.
+   *
+   * This field searches reference, subject and username across the whole ticket
+   * table, and an undebounced input fires one of those queries per keystroke —
+   * eleven round trips to type a ticket reference, ten of which are thrown away
+   * before they land.
+   */
+  const searchTerm = search.trim();
   useEffect(() => {
-    const timer = window.setTimeout(() => void load(), 0);
+    const timer = window.setTimeout(() => void load(), searchTerm ? 350 : 0);
     return () => window.clearTimeout(timer);
-  }, [load]);
+  }, [load, searchTerm]);
 
   async function open(id: string) {
     setError("");
+    // "Reply sent to the creator." belongs to the ticket it was sent on. Left
+    // standing it follows the operator to the next thread and reads as a
+    // confirmation of something they have not done yet.
+    setNotice("");
     setReply("");
     setInternal(false);
     try {
