@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, Ban, CircleSlash, PauseCircle, PlayCircle, RotateCcw, Wallet, X } from "lucide-react";
+import { AlertTriangle, Ban, CircleSlash, PauseCircle, PlayCircle, RefreshCw, RotateCcw, Wallet, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { apiRequest } from "@/lib/api-client";
 
@@ -58,6 +58,34 @@ export default function AdminCreatorControls({
   const [notice, setNotice] = useState("");
   const [events, setEvents] = useState<EventRow[]>([]);
   const [confirmingDeactivate, setConfirmingDeactivate] = useState(false);
+  const [settlement, setSettlement] = useState<{ status: string; ready: boolean; message: string } | null>(null);
+  const [checkingSettlement, setCheckingSettlement] = useState(false);
+
+  /**
+   * Asks Razorpay what it currently thinks of this creator's Route account.
+   *
+   * Approving a bank account here starts Razorpay's review; it does not finish
+   * it. They activate asynchronously and never tell us, so the status stored at
+   * approval is a snapshot that would otherwise stand forever — and the
+   * checkout gate reads exactly that value. This is how an operator finds out
+   * that a creator approved last week is, or is not, actually able to be paid.
+   */
+  async function recheckSettlement() {
+    setCheckingSettlement(true);
+    setError("");
+    try {
+      const response = await apiRequest<{ settlementStatus: string; settlementReady: boolean; message: string; error: string | null }>(
+        `/v1/admin/creators/${creator.id}/settlement/refresh`,
+        { method: "POST" },
+      );
+      setSettlement({ status: response.settlementStatus, ready: response.settlementReady, message: response.message });
+      if (response.error) setError(response.error);
+    } catch (refreshError) {
+      setError(refreshError instanceof Error ? refreshError.message : "Could not reach Razorpay.");
+    } finally {
+      setCheckingSettlement(false);
+    }
+  }
 
   const loadEvents = useCallback(async () => {
     try {
@@ -190,6 +218,32 @@ export default function AdminCreatorControls({
             onChange={(event) => setReason(event.target.value.slice(0, 1000))}
           />
         </label>
+
+        {/*
+          Settlement readiness is not one of the four switches below: nothing
+          here changes it, and an operator cannot grant it. It is Razorpay's
+          answer, and it is the single thing that decides whether this creator's
+          tip page can take money at all — so it sits above the controls rather
+          than among them.
+        */}
+        <div className="control-row">
+          <div className="control-copy">
+            <strong>Settlement</strong>
+            {settlement && (
+              <span className={`pill ${settlement.ready ? "green" : "orange"}`}>
+                {settlement.status.replaceAll("_", " ")}
+              </span>
+            )}
+            <small>
+              {settlement
+                ? settlement.message
+                : "Razorpay reviews linked accounts on its own schedule. Check the current answer before telling a creator they are live."}
+            </small>
+          </div>
+          <button type="button" className="button" disabled={checkingSettlement} onClick={() => void recheckSettlement()}>
+            <RefreshCw size={14} />{checkingSettlement ? "Checking…" : "Recheck with Razorpay"}
+          </button>
+        </div>
 
         <div className="control-list">
           {controls.map((control) => {
