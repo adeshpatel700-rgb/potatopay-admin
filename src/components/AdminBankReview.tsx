@@ -22,7 +22,7 @@ type BankAccount = {
   creator: { id: string; username: string; displayName: string; kycStatus: string };
   status: BankStatus;
   accountHolderName: string;
-  accountNumberMasked: string;
+  accountNumber: string;
   accountNumberLast4: string;
   ifsc: string;
   bankName: string;
@@ -181,7 +181,7 @@ export default function AdminBankReview() {
                 >
                   <strong>{item.creator.displayName || item.creator.username}</strong>
                   <small>
-                    @{item.creator.username} · {item.bankName} ••••{item.accountNumberLast4} · {dateLabel(item.submittedAt)}
+                    @{item.creator.username} · {item.bankName} {item.accountNumber} · {dateLabel(item.submittedAt)}
                   </small>
                   {item.duplicateClaims > 0 && (
                     <small style={{ color: "#b42318", fontWeight: 700 }}>
@@ -233,7 +233,7 @@ export default function AdminBankReview() {
 
               <div className="detail-grid">
                 <div className="detail"><label>Account holder</label><strong>{selected.accountHolderName}</strong></div>
-                <div className="detail"><label>Account number</label><strong>{groupDigits(selected.accountNumberMasked)}</strong></div>
+                <div className="detail"><label>Account number</label><strong>{groupDigits(selected.accountNumber)}</strong></div>
                 <div className="detail"><label>IFSC</label><strong>{selected.ifsc}</strong></div>
                 <div className="detail"><label>Bank</label><strong>{selected.bankName}</strong></div>
                 <div className="detail"><label>Branch</label><strong>{selected.branchName || "Not given"}</strong></div>
