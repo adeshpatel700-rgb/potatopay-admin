@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { apiRequest, formatInr } from "@/lib/api-client";
 import AdminCreatorControls, { type CreatorRestrictions } from "./AdminCreatorControls";
 
-type Creator = { id: string; username: string; displayName: string; email: string | null; plan: string; planExpiresAt: string | null; createdAt: string; isPublic: boolean; emailVerified: boolean; totalTips: number; totalAmountPaise: number; mediaShareCount: number; lastTipAt: string | null; kycStatus: string; bankStatus: string; restrictions: CreatorRestrictions };
+type Creator = { id: string; username: string; displayName: string; email: string | null; plan: string; planExpiresAt: string | null; createdAt: string; isPublic: boolean; emailVerified: boolean; totalTips: number; totalAmountPaise: number; mediaShareCount: number; lastTipAt: string | null; kycStatus: string; bankStatus: string; settlement: { accountId: string | null; productId: string | null; status: string; syncedAt: string | null; error: string | null; requirements: Array<{ field_reference?: string; reason_code?: string; status?: string }> }; restrictions: CreatorRestrictions };
 type Response = { items: Creator[]; total: number; limit: number; offset: number };
 function initials(value: string) { return value.split(/\s+/).map((part) => part[0]).filter(Boolean).slice(0, 2).join("").toUpperCase(); }
 function dateLabel(value: string) { return new Intl.DateTimeFormat("en-IN", { dateStyle: "medium" }).format(new Date(value)); }

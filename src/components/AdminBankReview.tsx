@@ -103,11 +103,19 @@ export default function AdminBankReview() {
     setError("");
     setNotice("");
     try {
-      await apiRequest(`/v1/admin/bank-accounts/${selected.id}`, {
+      const response = await apiRequest<{
+        status: ReviewStatus;
+        message?: string;
+        settlementReady?: boolean;
+        settlementError?: string;
+      }>(`/v1/admin/bank-accounts/${selected.id}`, {
         method: "PATCH",
         body: JSON.stringify({ status, reason }),
       });
-      setNotice(`Bank account marked ${status.replaceAll("_", " ")}.`);
+      setNotice(response.message ?? `Bank account marked ${status.replaceAll("_", " ")}.`);
+      if (response.settlementError) {
+        setError(`Bank review saved, but Razorpay still needs attention: ${response.settlementError}`);
+      }
       setReason("");
       setSelectedId(null);
       await load(filter);

@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, Ban, CircleSlash, PauseCircle, PlayCircle, RefreshCw, RotateCcw, Wallet, X } from "lucide-react";
+import { AlertTriangle, Ban, CheckCircle2, CircleSlash, PauseCircle, PlayCircle, RefreshCw, RotateCcw, Wallet, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { apiRequest } from "@/lib/api-client";
 
@@ -30,6 +30,15 @@ type AdminAction =
   | "deactivate" | "reactivate";
 
 type EventRow = { id: string; action: string; reason: string | null; actor: string | null; createdAt: string };
+type SettlementState = {
+  status: string;
+  ready: boolean;
+  message: string;
+  error: string | null;
+  accountId: string | null;
+  requirements: Array<{ field_reference?: string; reason_code?: string; status?: string }>;
+  syncedAt: string | null;
+};
 
 const RESTRICTING: ReadonlySet<AdminAction> = new Set(["pause_plan", "hold_page", "hold_payouts", "deactivate"]);
 
@@ -47,7 +56,22 @@ export default function AdminCreatorControls({
   onClose,
   onChanged,
 }: {
-  creator: { id: string; username: string; displayName: string; restrictions: CreatorRestrictions };
+  creator: {
+    id: string;
+    username: string;
+    displayName: string;
+    kycStatus: string;
+    bankStatus: string;
+    settlement: {
+      accountId: string | null;
+      productId: string | null;
+      status: string;
+      syncedAt: string | null;
+      error: string | null;
+      requirements: Array<{ field_reference?: string; reason_code?: string; status?: string }>;
+    };
+    restrictions: CreatorRestrictions;
+  };
   onClose: () => void;
   onChanged: () => void;
 }) {
@@ -58,7 +82,15 @@ export default function AdminCreatorControls({
   const [notice, setNotice] = useState("");
   const [events, setEvents] = useState<EventRow[]>([]);
   const [confirmingDeactivate, setConfirmingDeactivate] = useState(false);
-  const [settlement, setSettlement] = useState<{ status: string; ready: boolean; message: string } | null>(null);
+  const [settlement, setSettlement] = useState<SettlementState>({
+    status: creator.settlement.status,
+    ready: creator.settlement.status === "activated",
+    message: "Stored status from the last provider check.",
+    error: creator.settlement.error,
+    accountId: creator.settlement.accountId,
+    requirements: creator.settlement.requirements,
+    syncedAt: creator.settlement.syncedAt,
+  });
   const [checkingSettlement, setCheckingSettlement] = useState(false);
 
   /**
@@ -74,11 +106,26 @@ export default function AdminCreatorControls({
     setCheckingSettlement(true);
     setError("");
     try {
-      const response = await apiRequest<{ settlementStatus: string; settlementReady: boolean; message: string; error: string | null }>(
+      const response = await apiRequest<{
+        settlementStatus: string;
+        settlementReady: boolean;
+        message: string;
+        error: string | null;
+        accountId: string | null;
+        requirements: Array<{ field_reference?: string; reason_code?: string; status?: string }>;
+      }>(
         `/v1/admin/creators/${creator.id}/settlement/refresh`,
         { method: "POST" },
       );
-      setSettlement({ status: response.settlementStatus, ready: response.settlementReady, message: response.message });
+      setSettlement({
+        status: response.settlementStatus,
+        ready: response.settlementReady,
+        message: response.message,
+        error: response.error,
+        accountId: response.accountId,
+        requirements: response.requirements,
+        syncedAt: new Date().toISOString(),
+      });
       if (response.error) setError(response.error);
     } catch (refreshError) {
       setError(refreshError instanceof Error ? refreshError.message : "Could not reach Razorpay.");
@@ -228,17 +275,17 @@ export default function AdminCreatorControls({
         */}
         <div className="control-row">
           <div className="control-copy">
-            <strong>Settlement</strong>
-            {settlement && (
-              <span className={`pill ${settlement.ready ? "green" : "orange"}`}>
-                {settlement.status.replaceAll("_", " ")}
-              </span>
+            <strong><CheckCircle2 size={14} />Razorpay Route settlement</strong>
+            <span className={`pill ${settlement.ready ? "green" : settlement.status === "error" ? "red" : "orange"}`}>
+              {settlement.status.replaceAll("_", " ")}
+            </span>
+            <small>Identity KYC: {creator.kycStatus.replaceAll("_", " ")} · Bank: {creator.bankStatus.replaceAll("_", " ")}</small>
+            <small>{settlement.message}</small>
+            {settlement.requirements.length > 0 && (
+              <small>Razorpay still needs: {settlement.requirements.map((item) => item.field_reference || item.reason_code || "additional information").join(", ")}</small>
             )}
-            <small>
-              {settlement
-                ? settlement.message
-                : "Razorpay reviews linked accounts on its own schedule. Check the current answer before telling a creator they are live."}
-            </small>
+            {settlement.error && <small style={{ color: "#b42318", fontWeight: 700 }}>{settlement.error}</small>}
+            {settlement.accountId && <small>Linked account: {settlement.accountId}</small>}
           </div>
           <button type="button" className="button" disabled={checkingSettlement} onClick={() => void recheckSettlement()}>
             <RefreshCw size={14} />{checkingSettlement ? "Checking…" : "Recheck with Razorpay"}
