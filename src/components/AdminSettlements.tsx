@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, Landmark, RefreshCw } from "lucide-react";
+import { AlertTriangle, Landmark, RefreshCw, Users, Wallet } from "lucide-react";
 import { useState } from "react";
 import { PageHead, Pager, StatRow, rupees, statusClass, sinceLabel, useResource } from "./admin-shared";
 
@@ -43,9 +43,9 @@ export default function AdminSettlements() {
 
       {data && (
         <StatRow stats={[
-          { label: "Creators on this page", value: String(data.items.length) },
-          { label: "With money stuck", value: String(blocked), tone: blocked > 0 ? "red" : "green" },
-          { label: "Value not transferred", value: rupees(heldBack), tone: heldBack > 0 ? "red" : "green" },
+          { label: "Creators on this page", value: String(data.items.length), icon: Users },
+          { label: "With money stuck", value: String(blocked), tone: blocked > 0 ? "red" : "green", icon: AlertTriangle },
+          { label: "Value not transferred", value: rupees(heldBack), tone: heldBack > 0 ? "red" : "green", icon: Wallet },
         ]} />
       )}
 

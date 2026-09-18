@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, type LucideIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { apiRequest } from "@/lib/api-client";
 
@@ -108,16 +108,29 @@ export function Pager({ offset, limit, total, shown, onChange, disabled }: { off
   );
 }
 
-/** A row of headline figures above a table. */
-export function StatRow({ stats }: { stats: Array<{ label: string; value: string; tone?: "green" | "red" | "orange" }> }) {
+/**
+ * A row of headline figures above a table.
+ *
+ * The icon is not decoration: these rows carry four or five numbers that are
+ * all formatted alike, and a tinted glyph is what lets someone find the one
+ * they came for without reading every label. `tone` colours the chip and the
+ * figure together, so a tile that needs acting on reads as one object rather
+ * than a number with a coloured word above it.
+ */
+export function StatRow({ stats }: { stats: Array<{ label: string; value: string; tone?: "green" | "red" | "orange"; icon?: LucideIcon; note?: string }> }) {
   return (
     <div className="stat-row">
-      {stats.map((stat) => (
-        <div className="stat-tile" key={stat.label}>
-          <small>{stat.label}</small>
-          <strong className={stat.tone ?? ""}>{stat.value}</strong>
-        </div>
-      ))}
+      {stats.map((stat) => {
+        const Icon = stat.icon;
+        return (
+          <div className={`stat-tile ${stat.tone ?? ""}`} key={stat.label}>
+            {Icon && <span className="stat-chip" aria-hidden="true"><Icon size={16} /></span>}
+            <small>{stat.label}</small>
+            <strong className={stat.tone ?? ""}>{stat.value}</strong>
+            {stat.note && <em>{stat.note}</em>}
+          </div>
+        );
+      })}
     </div>
   );
 }

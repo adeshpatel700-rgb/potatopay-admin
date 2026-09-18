@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, RefreshCw, Webhook } from "lucide-react";
+import { Activity, AlertTriangle, Clock, RefreshCw, Webhook } from "lucide-react";
 import { StatRow, sinceLabel, timeLabel, useResource } from "./admin-shared";
 import { PageHead } from "./admin-shared";
 
@@ -35,10 +35,10 @@ export default function AdminWebhooks() {
 
       {data && (
         <StatRow stats={[
-          { label: "Last hour", value: data.volume.lastHour.toLocaleString("en-IN") },
-          { label: "Last 24 hours", value: data.volume.lastDay.toLocaleString("en-IN") },
-          { label: "Last 7 days", value: data.volume.lastWeek.toLocaleString("en-IN") },
-          { label: "Most recent", value: sinceLabel(data.volume.newest), tone: quiet ? "red" : "green" },
+          { label: "Last hour", value: data.volume.lastHour.toLocaleString("en-IN"), icon: Activity },
+          { label: "Last 24 hours", value: data.volume.lastDay.toLocaleString("en-IN"), icon: Activity },
+          { label: "Last 7 days", value: data.volume.lastWeek.toLocaleString("en-IN"), icon: Webhook },
+          { label: "Most recent", value: sinceLabel(data.volume.newest), tone: quiet ? "red" : "green", icon: Clock },
         ]} />
       )}
 

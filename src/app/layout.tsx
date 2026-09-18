@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { AdminAuthGate } from "@/components/AdminAuthGate";
 import { AdminSidebar } from "@/components/AdminSidebar";
+import { AdminTopbar } from "@/components/AdminTopbar";
 import "./globals.css";
 
 /**
@@ -26,5 +27,5 @@ const inter = Inter({
 export const metadata: Metadata = { title: "Potatopay Admin", description: "Potatopay operations and KYC review console." };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en" className={inter.variable}><body><AdminAuthGate><div className="app-shell"><AdminSidebar /><main className="main"><div className="content">{children}</div></main></div></AdminAuthGate></body></html>;
+  return <html lang="en" className={inter.variable}><body><AdminAuthGate><div className="app-shell"><AdminSidebar /><main className="main"><AdminTopbar /><div className="content">{children}</div></main></div></AdminAuthGate></body></html>;
 }

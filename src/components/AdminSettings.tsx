@@ -1,6 +1,6 @@
 "use client";
 
-import { Database, RefreshCw, Settings as SettingsIcon, ShieldCheck, Wallet } from "lucide-react";
+import { Database, RefreshCw, Settings as SettingsIcon, ShieldCheck, Users, Wallet } from "lucide-react";
 import { PageHead, StatRow, useResource } from "./admin-shared";
 
 type Response = {
@@ -54,10 +54,10 @@ export default function AdminSettings() {
       {data && (
         <>
           <StatRow stats={[
-            { label: "Mode", value: data.environment.razorpayMode, tone: live ? "green" : "orange" },
-            { label: "Environment", value: data.environment.nodeEnv, tone: data.environment.nodeEnv === "production" ? "green" : "orange" },
-            { label: "Schema version", value: String(data.database.schemaVersion) },
-            { label: "Creators", value: data.database.creators.toLocaleString("en-IN") },
+            { label: "Mode", value: data.environment.razorpayMode, tone: live ? "green" : "orange", icon: ShieldCheck },
+            { label: "Environment", value: data.environment.nodeEnv, tone: data.environment.nodeEnv === "production" ? "green" : "orange", icon: SettingsIcon },
+            { label: "Schema version", value: String(data.database.schemaVersion), icon: Database },
+            { label: "Creators", value: data.database.creators.toLocaleString("en-IN"), icon: Users },
           ]} />
 
           <section className="card table-card" style={{ marginTop: 18 }}>

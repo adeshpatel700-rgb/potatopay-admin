@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Activity, BarChart3, ClipboardCheck, FileClock, Landmark, LifeBuoy, LineChart, LogOut, Menu, Receipt, RefreshCw, Settings, ShieldAlert, UserCog, Users, UsersRound, Webhook, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { apiRequest } from "@/lib/api-client";
 import { useAdminSession } from "@/components/AdminAuthGate";
 
@@ -18,7 +18,9 @@ import { useAdminSession } from "@/components/AdminAuthGate";
  * built. Give an item an `href` the moment its page exists and it becomes a
  * link with no other change.
  */
-type NavItem = { label: string; icon: typeof BarChart3; href?: string };
+/** `badge` names a key on the nav-counts response, when the item has a queue. */
+type NavItem = { label: string; icon: typeof BarChart3; href?: string; badge?: keyof NavCounts };
+type NavCounts = { kycReview: number; bankReview: number; support: number; stuckTransfers: number };
 type NavGroup = { heading: string; items: NavItem[] };
 
 const NAV: NavGroup[] = [
@@ -40,15 +42,15 @@ const NAV: NavGroup[] = [
     heading: "Money",
     items: [
       { href: "/transactions", label: "Transactions", icon: Receipt },
-      { href: "/settlements", label: "Settlements", icon: Landmark },
+      { href: "/settlements", label: "Settlements", icon: Landmark, badge: "stuckTransfers" },
       { href: "/subscriptions", label: "Subscriptions", icon: RefreshCw },
     ],
   },
   {
     heading: "Compliance",
     items: [
-      { href: "/kyc", label: "KYC review", icon: ClipboardCheck },
-      { href: "/bank", label: "Bank review", icon: Landmark },
+      { href: "/kyc", label: "KYC review", icon: ClipboardCheck, badge: "kycReview" },
+      { href: "/bank", label: "Bank review", icon: Landmark, badge: "bankReview" },
     ],
   },
   {
@@ -61,7 +63,7 @@ const NAV: NavGroup[] = [
   {
     heading: "Operations",
     items: [
-      { href: "/support", label: "Support", icon: LifeBuoy },
+      { href: "/support", label: "Support", icon: LifeBuoy, badge: "support" },
       { href: "/risk", label: "Risk & alerts", icon: ShieldAlert },
     ],
   },
@@ -77,6 +79,19 @@ const NAV: NavGroup[] = [
 
 function NavContent({ close }: { close?: () => void }) {
   const pathname = usePathname(); const router = useRouter(); const session = useAdminSession(); const [busy, setBusy] = useState(false);
+  /**
+   * Queue sizes, refetched when the route changes.
+   *
+   * A badge is only worth having if it is current — a stale "12 pending" on a
+   * cleared queue is worse than no badge, because it sends someone to look at
+   * nothing. Re-reading on navigation is enough without polling.
+   */
+  const [counts, setCounts] = useState<NavCounts | null>(null);
+  useEffect(() => {
+    let active = true;
+    void apiRequest<NavCounts>("/v1/admin/nav-counts").then((response) => { if (active) setCounts(response); }).catch(() => undefined);
+    return () => { active = false; };
+  }, [pathname]);
   async function logout() { setBusy(true); await apiRequest("/v1/auth/logout", { method: "POST" }).catch(() => undefined); router.replace("/"); }
   return <>
     <div className="brand"><span className="brand-mark" aria-hidden="true">🥔</span><div><strong>Potatopay</strong><small>Admin console</small></div></div>
@@ -86,16 +101,20 @@ function NavContent({ close }: { close?: () => void }) {
         <div className="nav-group" key={group.heading}>
           <p className="eyebrow nav-label">{group.heading}</p>
           <div className="nav-list">
-            {group.items.map(({ href, label, icon: Icon }) => {
+            {group.items.map(({ href, label, icon: Icon, badge }) => {
               // Kept for items added before their page exists. Everything in
               // NAV has an href today, so this branch is currently unreached.
               if (!href) {
                 return <span key={label} className="nav-link soon" aria-disabled="true"><Icon size={17} />{label}<em>soon</em></span>;
               }
               const active = href === "/" ? pathname === href : pathname.startsWith(href);
+              const count = badge ? counts?.[badge] ?? 0 : 0;
               return (
                 <Link key={href} href={href} onClick={close} className={`nav-link ${active ? "active" : ""}`} aria-current={active ? "page" : undefined}>
                   <Icon size={17} />{label}
+                  {/* Stuck money is red wherever it appears; a review queue is
+                      merely waiting, so it stays neutral. */}
+                  {count > 0 && <span className={`nav-badge ${badge === "stuckTransfers" ? "red" : ""}`}>{count > 99 ? "99+" : count}</span>}
                 </Link>
               );
             })}
@@ -103,7 +122,13 @@ function NavContent({ close }: { close?: () => void }) {
         </div>
       ))}
     </nav>
-    <div className="sidebar-foot"><p className="signed-in">Signed in as <strong>@{session.username}</strong></p><button type="button" className="nav-link logout" disabled={busy} onClick={() => void logout()}><LogOut size={16} />{busy ? "Signing out…" : "Sign out"}</button></div>
+    <div className="sidebar-foot">
+      <div className="sidebar-user">
+        <span className="avatar sm">{session.username.slice(0, 2).toUpperCase()}</span>
+        <span className="sidebar-user-copy"><strong>@{session.username}</strong><small>Signed in</small></span>
+      </div>
+      <button type="button" className="nav-link logout" disabled={busy} onClick={() => void logout()}><LogOut size={16} />{busy ? "Signing out…" : "Sign out"}</button>
+    </div>
   </>;
 }
 

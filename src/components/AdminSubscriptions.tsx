@@ -1,6 +1,6 @@
 "use client";
 
-import { RefreshCw, Repeat } from "lucide-react";
+import { CalendarClock, Coins, RefreshCw, Repeat, Users } from "lucide-react";
 import { useState } from "react";
 import { PageHead, Pager, StatRow, dateLabel, rupees, statusClass, timeLabel, useResource } from "./admin-shared";
 
@@ -36,10 +36,10 @@ export default function AdminSubscriptions() {
 
       {data && (
         <StatRow stats={[
-          { label: "Creators on a paid plan", value: data.summary.activePlans.toLocaleString("en-IN") },
-          { label: "Lifetime plan revenue", value: rupees(data.summary.lifetimeRevenuePaise) },
+          { label: "Creators on a paid plan", value: data.summary.activePlans.toLocaleString("en-IN"), icon: Users },
+          { label: "Lifetime plan revenue", value: rupees(data.summary.lifetimeRevenuePaise), icon: Coins },
           // Without auto-renewal this is the churn warning, and the only one.
-          { label: "Expiring within 14 days", value: data.summary.expiringSoon.toLocaleString("en-IN"), tone: data.summary.expiringSoon > 0 ? "orange" : "green" },
+          { label: "Expiring within 14 days", value: data.summary.expiringSoon.toLocaleString("en-IN"), tone: data.summary.expiringSoon > 0 ? "orange" : "green", icon: CalendarClock },
         ]} />
       )}
 

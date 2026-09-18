@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, Receipt, RefreshCw } from "lucide-react";
+import { AlertTriangle, ArrowDownToLine, Coins, Receipt, RefreshCw, Wallet } from "lucide-react";
 import { useState } from "react";
 import { PageHead, Pager, StatRow, rupees, statusClass, timeLabel, useResource } from "./admin-shared";
 
@@ -48,13 +48,13 @@ export default function AdminTransactions() {
 
       {data && (
         <StatRow stats={[
-          { label: "Captured payments", value: data.totals.capturedCount.toLocaleString("en-IN") },
-          { label: "Gross captured", value: rupees(data.totals.grossPaise) },
-          { label: "Withheld for fees", value: rupees(data.totals.withheldPaise) },
-          { label: "Transferred to creators", value: rupees(data.totals.transferredPaise) },
+          { label: "Captured payments", value: data.totals.capturedCount.toLocaleString("en-IN"), icon: Receipt },
+          { label: "Gross captured", value: rupees(data.totals.grossPaise), icon: Coins },
+          { label: "Withheld for fees", value: rupees(data.totals.withheldPaise), icon: Wallet },
+          { label: "Transferred to creators", value: rupees(data.totals.transferredPaise), icon: ArrowDownToLine },
           // The number that matters: money the platform holds and the creator
           // has not been paid. Coloured only when it is not zero.
-          { label: "Stuck, not transferred", value: data.totals.stuckCount.toLocaleString("en-IN"), tone: data.totals.stuckCount > 0 ? "red" : "green" },
+          { label: "Stuck, not transferred", value: data.totals.stuckCount.toLocaleString("en-IN"), tone: data.totals.stuckCount > 0 ? "red" : "green", icon: AlertTriangle },
         ]} />
       )}
 
