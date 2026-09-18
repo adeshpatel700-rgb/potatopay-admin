@@ -8,7 +8,7 @@ type Response = {
   money: { platformFeeBps: number; gatewayFeeRecoveryBps: number; breakEvenBps: number };
   route: { businessType: string; category: string; subcategory: string; addressCity: string; addressState: string; addressPostalCode: string };
   overlay: { soundPacks: string[] };
-  database: { schemaVersion: number; creators: number; payments: number; webhookEvents: number };
+  database: { schemaVersion: number; creators: number; payments: number; webhookEvents: number; dataEpoch: string | null };
 };
 
 function Rows({ items }: { items: Array<{ label: string; value: React.ReactNode; note?: string }> }) {
@@ -98,6 +98,15 @@ export default function AdminSettings() {
               { label: "Creators", value: <strong>{data.database.creators.toLocaleString("en-IN")}</strong> },
               { label: "Payment intents", value: <strong>{data.database.payments.toLocaleString("en-IN")}</strong> },
               { label: "Webhook events", value: <strong>{data.database.webhookEvents.toLocaleString("en-IN")}</strong> },
+              {
+                label: "Console data epoch",
+                value: data.database.dataEpoch
+                  ? <span className="pill green">{new Date(data.database.dataEpoch).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}</span>
+                  : <span className="pill">all history</span>,
+                note: data.database.dataEpoch
+                  ? "Every figure in this console is counted from here. Rows before it still exist in the database and still reconcile against Razorpay — they are simply not platform history. Clear ADMIN_DATA_EPOCH to show them again."
+                  : "No cutoff set: the console counts every row ever written, including pre-launch test data.",
+              },
             ]} />
           </section>
         </>
