@@ -1,26 +1,74 @@
 @import "tailwindcss";
 
-:root { --bg: #f7f8fa; --ink: #111827; --muted: #66717c; --line: #e5e7eb; --soft: #f9fafb; --green: #18794e; --orange: #a95b1a; }
+/*
+ * One scale for everything.
+ *
+ * The console had a handful of greys chosen per component — #66717c here,
+ * #8a949e there, #9aa2aa somewhere else — which is why nothing quite lined up
+ * tonally. Three text weights and two line weights cover every screen, and
+ * naming them means a new screen inherits the system instead of inventing a
+ * fourth grey.
+ */
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --ink: #0f172a;          /* headings, numbers */
+  --body: #334155;         /* ordinary text */
+  --muted: #64748b;        /* labels, captions */
+  --faint: #94a3b8;        /* timestamps, hints */
+  --line: #e7e9ee;         /* card and table borders */
+  --line-soft: #f1f3f6;    /* row separators */
+  --soft: #f8fafc;         /* table headers, insets */
+  --accent: #c0672b;       /* the brand orange, used sparingly */
+  --accent-tint: #fdf3ec;
+  --green: #12715a;
+  --green-tint: #ecfdf5;
+  --orange: #a95b1a;
+  --orange-tint: #fff7ed;
+  --red: #b42318;
+  --red-tint: #fef2f2;
+  --radius: 12px;
+  --shadow: 0 1px 2px rgb(15 23 42 / 4%);
+  --shadow-lift: 0 1px 2px rgb(15 23 42 / 5%), 0 8px 24px rgb(15 23 42 / 6%);
+}
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font-family: Arial, Helvetica, sans-serif; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--body);
+  font-family: var(--font-sans), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* Tabular figures everywhere. In a console, every column of numbers is meant
+     to be compared down the column, and proportional digits make that
+     impossible — a 1 is half the width of a 0 and the decimal points wander. */
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+h1, h2, h3, strong { color: var(--ink); }
 button, a { font: inherit; }
 button { cursor: pointer; }
 .app-shell { min-height: 100vh; display: flex; }
-.sidebar { width: 248px; flex: 0 0 248px; background: #fff; border-right: 1px solid var(--line); display: flex; flex-direction: column; padding: 24px 14px; }
+.sidebar { width: 252px; flex: 0 0 252px; background: var(--surface); border-right: 1px solid var(--line); display: flex; flex-direction: column; padding: 22px 12px; }
 .brand { display: flex; align-items: center; gap: 11px; padding: 0 10px; }
-.brand-mark { width: 36px; height: 36px; border-radius: 50%; background: #f2c14b; display: grid; place-items: center; font-size: 20px; }
+.brand-mark { width: 34px; height: 34px; border-radius: 10px; background: #f2c14b; display: grid; place-items: center; font-size: 18px; box-shadow: var(--shadow); }
 .brand strong { display: block; font-size: 15px; letter-spacing: -.02em; }
-.brand small { display: block; margin-top: 3px; color: #8a949e; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+.brand small { display: block; margin-top: 2px; color: var(--faint); font-size: 9px; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; }
 .rule { height: 1px; background: var(--line); margin: 25px 10px 20px; }
-.eyebrow { color: #6b7280; font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+.eyebrow { color: var(--accent); font-size: 10px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; }
 .nav-label { padding: 0 12px; margin: 0 0 7px; }
 .nav-list { display: grid; gap: 3px; }
-.nav-link { display: flex; align-items: center; gap: 11px; color: var(--muted); text-decoration: none; border: 0; background: transparent; border-radius: 8px; padding: 11px 12px; font-size: 13px; font-weight: 700; text-align: left; transition: background .18s ease, color .18s ease; }
-.nav-link:hover, .nav-link.active { background: #f3f4f6; color: var(--ink); }
+/* The active row is a filled pill rather than a colour change: at 13px, weight
+   and hue alone are not enough to find your place at a glance. */
+.nav-link { display: flex; align-items: center; gap: 10px; color: var(--muted); text-decoration: none; border: 0; background: transparent; border-radius: 9px; padding: 9px 11px; font-size: 13px; font-weight: 600; text-align: left; transition: background .15s ease, color .15s ease; }
+.nav-link svg { color: var(--faint); transition: color .15s ease; flex: 0 0 auto; }
+.nav-link:hover { background: var(--soft); color: var(--ink); }
+.nav-link:hover svg { color: var(--muted); }
+.nav-link.active { background: var(--accent-tint); color: var(--accent); font-weight: 700; }
+.nav-link.active svg { color: var(--accent); }
 /* Grouped navigation. The gap between groups does the separating, so the
    headings need no rules or boxes to read as sections. */
-.nav-groups { display: grid; gap: 18px; }
-.nav-group .nav-label { font-size: 9px; letter-spacing: .14em; text-transform: uppercase; opacity: .62; }
+.nav-groups { display: grid; gap: 16px; overflow-y: auto; }
+.nav-group .nav-label { font-size: 9px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--faint); margin-bottom: 5px; }
 /* Structure without a page yet: visibly present, plainly not clickable. */
 .nav-link.soon { cursor: default; opacity: .38; font-weight: 600; }
 .nav-link.soon:hover { background: transparent; color: var(--muted); }
@@ -30,15 +78,16 @@ button { cursor: pointer; }
 .signed-in strong { color: #374151; }
 .logout { width: 100%; }
 .main { min-width: 0; flex: 1; }
-.content { width: min(1240px, 100%); margin: 0 auto; padding: 34px 40px 60px; }
+.content { width: min(1320px, 100%); margin: 0 auto; padding: 32px 36px 72px; }
 .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
-.page-head h1 { margin: 7px 0 0; font-size: 31px; letter-spacing: -.045em; }
-.page-head p { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
-.button { display: inline-flex; align-items: center; gap: 8px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; color: #374151; padding: 9px 12px; font-size: 12px; font-weight: 700; }
-.button:hover { background: var(--soft); }
+.page-head h1 { margin: 6px 0 0; font-size: 28px; font-weight: 700; letter-spacing: -.03em; color: var(--ink); }
+.page-head p { margin: 7px 0 0; color: var(--muted); font-size: 13.5px; line-height: 1.55; max-width: 72ch; }
+.button { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); color: var(--body); padding: 8px 13px; font-size: 12.5px; font-weight: 600; box-shadow: var(--shadow); transition: background .15s ease, border-color .15s ease; }
+.button:hover { background: var(--soft); border-color: #d8dce4; }
+.button svg { color: var(--faint); }
 .button:disabled { opacity: .5; cursor: not-allowed; }
 .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 24px; }
-.card { background: #fff; border: 1px solid var(--line); border-radius: 11px; padding: 20px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
 .card-title { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
 .card-title h2 { margin: 0; font-size: 16px; }
 .card-title p { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
@@ -56,34 +105,45 @@ button { cursor: pointer; }
 .row-body strong, .row-body small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .row-body strong { font-size: 13px; }
 .row-body small { margin-top: 3px; color: var(--muted); font-size: 11px; }
-.amount { font: 700 12px ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; }
+/* Money is not monospace — Inter's tabular figures already align, and the
+   monospace fallback made amounts look like identifiers rather than values. */
+.amount { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink); }
 .pulse { margin-top: 16px; }
-.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 22px; }
-.stat { border-left: 1px solid var(--line); padding-left: 16px; }
-.stat:first-child { border-left: 0; padding-left: 0; }
-.stat label { color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-.stat strong { display: block; margin-top: 8px; font-size: 25px; letter-spacing: -.04em; }
-.stat small { display: block; margin-top: 5px; color: #8a949e; font-size: 11px; }
-.table-card { margin-top: 24px; overflow: hidden; padding: 0; }
+/*
+ * `.stat` is shared by two layouts and the card style further down this file
+ * already wins for both. These rules were dead. Rather than delete the
+ * intent, the overview's figures are now cards too — which is what they were
+ * already rendering as, and what reads better beside the tables below them.
+ */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(178px, 1fr)); gap: 12px; margin-top: 22px; }
+.table-card { margin-top: 20px; overflow: hidden; padding: 0; }
+.table-wrap { max-height: 72vh; }
 .table-head, .table-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; }
 .table-head { border-bottom: 1px solid var(--line); }
-.table-head strong { font-size: 14px; }
+.table-head strong { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 700; }
+.table-head strong svg { color: var(--faint); }
 .table-head span, .table-foot span { color: var(--muted); font-size: 12px; }
 .table-wrap { overflow-x: auto; }
-table { width: 100%; min-width: 1060px; border-collapse: collapse; text-align: left; font-size: 12px; }
-th { background: var(--soft); color: var(--muted); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
-th, td { padding: 13px 20px; border-bottom: 1px solid #f0f1f3; vertical-align: top; }
+table { width: 100%; min-width: 1060px; border-collapse: collapse; text-align: left; font-size: 12.5px; }
+/* The header stays put while the body scrolls: a wide console table loses its
+   column names within two screens of rows otherwise. */
+th { position: sticky; top: 0; z-index: 1; background: var(--soft); color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; border-bottom: 1px solid var(--line); }
+th, td { padding: 14px 20px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+tbody tr { transition: background .12s ease; }
+tbody tr:hover { background: var(--soft); }
+td strong { font-weight: 600; }
 tbody tr:last-child td { border-bottom: 0; }
 .table-person { display: flex; align-items: center; gap: 10px; }
 .table-person .avatar { width: 36px; height: 36px; font-size: 11px; }
 .table-person strong, .table-person small { display: block; }
 .table-person small { color: var(--muted); margin-top: 3px; }
-.pill { display: inline-flex; border-radius: 999px; padding: 5px 8px; background: #f3f4f6; color: #374151; font-size: 10px; font-weight: 700; text-transform: capitalize; }
-.pill.green { background: #ecfdf3; color: var(--green); }
-.pill.orange { background: #fff7ed; color: var(--orange); }
-.pill.red { background: #fef2f2; color: #b42318; }
+.pill { display: inline-flex; align-items: center; gap: 4px; border-radius: 6px; padding: 3px 7px; background: #eef1f5; color: var(--body); font-size: 10.5px; font-weight: 600; line-height: 1.5; text-transform: capitalize; white-space: nowrap; }
+.pill svg { flex: 0 0 auto; }
+.pill.green { background: var(--green-tint); color: var(--green); }
+.pill.orange { background: var(--orange-tint); color: var(--orange); }
+.pill.red { background: var(--red-tint); color: var(--red); }
 .stack { display: flex; flex-wrap: wrap; gap: 5px; }
-.empty, .loading { padding: 52px 20px; color: var(--muted); font-size: 13px; text-align: center; }
+.empty, .loading { padding: 56px 20px; color: var(--muted); font-size: 13px; text-align: center; }
 .table-foot { border-top: 1px solid var(--line); }
 .pager { display: flex; gap: 8px; }
 .notice { margin-top: 20px; border: 1px solid #bbf7d0; background: #f0fdf4; color: var(--green); padding: 12px 14px; font-size: 13px; }
@@ -206,18 +266,39 @@ tbody tr:last-child td { border-bottom: 0; }
 
 
 /* ---- bank review + event inspector ------------------------------------- */
+/* Also declared once, not twice. Inside a `.table-head` the top margin is
+   dropped, because there the filters sit beside the title rather than above
+   the table. */
 .filter-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 20px; }
-.search-field { display: inline-flex; align-items: center; gap: 8px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; padding: 0 12px; min-width: 260px; flex: 1 1 260px; color: #6b7280; }
-.search-field input { border: 0; outline: 0; background: transparent; padding: 10px 0; font-size: 12px; font-weight: 600; color: #374151; width: 100%; }
+.table-head .filter-row { margin-top: 0; }
+.filter-row select, .filter-row > input { padding: 8px 11px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); font-size: 12.5px; font-weight: 600; color: var(--body); min-width: 0; box-shadow: var(--shadow); }
+.filter-row > input { flex: 1 1 210px; font-weight: 500; }
+.filter-row select:focus-visible, .filter-row > input:focus-visible { outline: 0; border-color: var(--accent); box-shadow: 0 0 0 3px rgb(192 103 43 / 14%); }
+.search-field { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); padding: 0 12px; min-width: 260px; flex: 1 1 260px; color: var(--faint); box-shadow: var(--shadow); }
+.search-field:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgb(192 103 43 / 14%); }
+.search-field input { border: 0; outline: 0; background: transparent; padding: 9px 0; font-size: 12.5px; font-weight: 500; color: var(--body); width: 100%; }
 .warn-box { display: flex; align-items: flex-start; gap: 10px; margin-top: 18px; border: 1px solid #fecaca; background: #fef7f7; border-radius: 10px; padding: 13px 14px; color: #b42318; }
 .warn-box strong { display: block; font-size: 12px; }
 .warn-box small { display: block; margin-top: 4px; color: #7f4a45; font-size: 11px; line-height: 1.55; }
-.stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 20px; }
-.stat { border: 1px solid var(--line); border-radius: 11px; background: #fff; padding: 15px; }
-.stat label { display: flex; align-items: center; gap: 5px; color: #66717c; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
-.stat strong { display: block; margin-top: 9px; font-size: 25px; letter-spacing: -.02em; }
-.stat strong.danger { color: #b42318; }
-.stat small { display: block; margin-top: 4px; color: #66717c; font-size: 11px; }
+/*
+ * One stat row, used by every screen.
+ *
+ * This was declared twice — a grid here and a flexbox at the foot of the file
+ * — and the later rule silently won, which quietly changed the bank review and
+ * event inspector layouts. `auto-fit` already does what the flex version was
+ * added for: the tiles share the width evenly and wrap when there is not
+ * enough of it.
+ */
+.stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(178px, 1fr)); gap: 12px; margin-top: 20px; }
+.stat, .stat-tile { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 15px 16px; box-shadow: var(--shadow); min-width: 0; }
+.stat label, .stat-tile small { display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.stat strong, .stat-tile strong { display: block; margin-top: 9px; font-size: 23px; font-weight: 700; letter-spacing: -.02em; color: var(--ink); line-height: 1.15; }
+/* Colour is reserved for a figure that needs acting on. A tile that is always
+   green teaches an operator to stop reading the colour. */
+.stat strong.danger, .stat-tile strong.red { color: var(--red); }
+.stat-tile strong.green { color: var(--green); }
+.stat-tile strong.orange { color: var(--orange); }
+.stat small { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; }
 .payload { margin-top: 10px; max-height: 46vh; overflow: auto; border: 1px solid var(--line); border-radius: 9px; background: #f9fafb; padding: 13px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
 
 
@@ -232,19 +313,19 @@ tbody tr:last-child td { border-bottom: 0; }
 .bubble p { margin: 8px 0 0; font-size: 13px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
 .internal-toggle { display: inline-flex; align-items: center; gap: 7px; margin-top: 12px; color: #66717c; font-size: 12px; font-weight: 600; }
 
-/* Operations screens ------------------------------------------------------ */
-/* A row of headline figures above a table. Wraps rather than scrolls, so a
-   narrow window stacks the numbers instead of hiding the last one. */
-.stat-row { display: flex; flex-wrap: wrap; gap: 12px; margin: 18px 0 0; }
-.stat-tile { flex: 1 1 160px; min-width: 0; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
-.stat-tile small { display: block; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-.stat-tile strong { display: block; margin-top: 7px; font-size: 20px; letter-spacing: -.02em; color: var(--ink); }
-.stat-tile strong.green { color: #12715a; }
-.stat-tile strong.red { color: #b42318; }
-.stat-tile strong.orange { color: #b4540a; }
-/* Filters live in the table header, so the control and the thing it filters
-   are never separated by a scroll. */
-.filter-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.filter-row select, .filter-row input { padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; font-size: 12px; font-weight: 600; color: var(--ink); min-width: 0; }
-.filter-row input { flex: 1 1 200px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 500; }
-.filter-row select:focus, .filter-row input:focus { outline: 2px solid #c0672b33; border-color: #c0672b; }
+/* ---- focus, motion, small screens --------------------------------------- */
+/* One visible focus ring for everything interactive. Keyboard operation of a
+   console is not a nicety: it is how anyone reviewing a queue actually works. */
+.button:focus-visible, .nav-link:focus-visible, .tab:focus-visible, .queue-item:focus-visible, .segment button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+@media (max-width: 900px) {
+  .content { padding-inline: 18px; }
+  .stat-row { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .table-head { flex-wrap: wrap; align-items: flex-start; }
+  .table-head .filter-row { width: 100%; }
+}
