@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, Ban, CheckCircle2, CircleSlash, PauseCircle, PlayCircle, RefreshCw, RotateCcw, Wallet, X } from "lucide-react";
+import { AlertTriangle, Ban, CheckCircle2, CircleSlash, Link2, PauseCircle, PlayCircle, RefreshCw, RotateCcw, Wallet, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { apiRequest } from "@/lib/api-client";
 
@@ -92,6 +92,20 @@ export default function AdminCreatorControls({
     syncedAt: creator.settlement.syncedAt,
   });
   const [checkingSettlement, setCheckingSettlement] = useState(false);
+  /**
+   * Connecting payouts from the console.
+   *
+   * This lived only on the creator's own KYC page, which is the wrong place
+   * for it: the person who can see that Route is failing is whoever is reading
+   * this panel, while the creator sees only that their tip page refuses money.
+   * The PAN is still checked against their approved verification server-side —
+   * an admin cannot attach an arbitrary one.
+   */
+  const [connectPan, setConnectPan] = useState("");
+  const [connectPhone, setConnectPhone] = useState("");
+  const [connectAccountId, setConnectAccountId] = useState("");
+  const [connecting, setConnecting] = useState(false);
+  const [connectNotice, setConnectNotice] = useState("");
 
   /**
    * Asks Razorpay what it currently thinks of this creator's Route account.
@@ -184,6 +198,46 @@ export default function AdminCreatorControls({
       setError(requestError instanceof Error ? requestError.message : "Could not apply that action.");
     } finally {
       setBusy(null);
+    }
+  }
+
+  async function connectPayouts() {
+    const accountId = connectAccountId.trim();
+    const pan = connectPan.trim().toUpperCase();
+    const phone = connectPhone.replace(/\D/g, "");
+    if (!accountId && (pan.length !== 10 || phone.length < 8)) return;
+    setConnecting(true);
+    setError("");
+    setConnectNotice("");
+    try {
+      const response = await apiRequest<{
+        settlementStatus: string;
+        settlementReady: boolean;
+        message: string;
+        settlementError?: string | null;
+        accountId?: string | null;
+      }>(`/v1/admin/creators/${creator.id}/payout-connect`, {
+        method: "POST",
+        body: JSON.stringify(accountId ? { accountId } : { pan, phone }),
+      });
+      setConnectNotice(response.message);
+      setSettlement((current) => ({
+        ...current,
+        status: response.settlementStatus,
+        ready: response.settlementReady,
+        message: response.message,
+        error: response.settlementError ?? null,
+        syncedAt: new Date().toISOString(),
+      }));
+      // The PAN is not kept in the field after a successful submit.
+      setConnectPan("");
+      setConnectPhone("");
+      setConnectAccountId("");
+      onChanged();
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "Could not connect payouts.");
+    } finally {
+      setConnecting(false);
     }
   }
 
@@ -291,6 +345,56 @@ export default function AdminCreatorControls({
             <RefreshCw size={14} />{checkingSettlement ? "Checking…" : "Recheck with Razorpay"}
           </button>
         </div>
+
+        {/* Only offered once identity is approved — the endpoint refuses
+            otherwise, and a form that always 409s is worse than no form. */}
+        {creator.kycStatus === "approved" && !settlement.ready && (
+          <div className="control-row">
+            <div className="control-copy" style={{ width: "100%" }}>
+              <strong><Link2 size={14} />Connect Razorpay payouts</strong>
+              <small>
+                Enter the personal PAN from this creator&apos;s approved KYC and a real phone number, and Route
+                creates their linked account. Or paste an existing Razorpay Account Id to attach one made by hand.
+              </small>
+              {connectNotice && <small style={{ color: "#12715a", fontWeight: 700 }}>{connectNotice}</small>}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10 }}>
+                <input
+                  value={connectPan}
+                  onChange={(event) => setConnectPan(event.target.value.replace(/[^a-zA-Z0-9]/g, "").slice(0, 10).toUpperCase())}
+                  placeholder="ABCDE1234F"
+                  aria-label="Approved PAN"
+                  disabled={connecting || Boolean(connectAccountId.trim())}
+                  style={{ flex: "1 1 150px", minWidth: 0, padding: "9px 11px", border: "1px solid #d6d3cc", borderRadius: 8, fontFamily: "ui-monospace, monospace", fontSize: 13 }}
+                />
+                <input
+                  value={connectPhone}
+                  onChange={(event) => setConnectPhone(event.target.value.replace(/\D/g, "").slice(0, 15))}
+                  placeholder="9876543210"
+                  inputMode="numeric"
+                  aria-label="Payout phone"
+                  disabled={connecting || Boolean(connectAccountId.trim())}
+                  style={{ flex: "1 1 150px", minWidth: 0, padding: "9px 11px", border: "1px solid #d6d3cc", borderRadius: 8, fontFamily: "ui-monospace, monospace", fontSize: 13 }}
+                />
+                <input
+                  value={connectAccountId}
+                  onChange={(event) => setConnectAccountId(event.target.value.trim())}
+                  placeholder="or acc_XXXXXXXXXXXX"
+                  aria-label="Existing Razorpay account id"
+                  disabled={connecting}
+                  style={{ flex: "1 1 180px", minWidth: 0, padding: "9px 11px", border: "1px solid #d6d3cc", borderRadius: 8, fontFamily: "ui-monospace, monospace", fontSize: 13 }}
+                />
+                <button
+                  type="button"
+                  className="button"
+                  disabled={connecting || (!connectAccountId.trim() && (connectPan.length !== 10 || connectPhone.length < 8))}
+                  onClick={() => void connectPayouts()}
+                >
+                  <Link2 size={14} />{connecting ? "Connecting…" : "Connect payouts"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="control-list">
           {controls.map((control) => {

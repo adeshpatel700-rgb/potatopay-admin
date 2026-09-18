@@ -1,39 +1,108 @@
 "use client";
 
 import Link from "next/link";
-import { BarChart3, ClipboardCheck, Landmark, LifeBuoy, LineChart, LogOut, Menu, Users, Webhook, X } from "lucide-react";
+import { Activity, BarChart3, ClipboardCheck, FileClock, Landmark, LifeBuoy, LineChart, LogOut, Menu, Receipt, RefreshCw, Settings, ShieldAlert, UserCog, Users, UsersRound, Webhook, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { apiRequest } from "@/lib/api-client";
 import { useAdminSession } from "@/components/AdminAuthGate";
 
-const NAV = [
-  { href: "/", label: "Overview", icon: BarChart3 },
-  { href: "/analytics", label: "Analytics", icon: LineChart },
-  { href: "/creators", label: "Creators", icon: Users },
-  { href: "/supporters", label: "Supporters", icon: Users },
-  { href: "/kyc", label: "KYC review", icon: ClipboardCheck },
-  { href: "/bank", label: "Bank review", icon: Landmark },
-  { href: "/events", label: "Provider events", icon: Webhook },
-  { href: "/support", label: "Support", icon: LifeBuoy },
+/**
+ * The console's information architecture, grouped by what an operator is
+ * actually doing rather than by which screen was built first.
+ *
+ * Entries with no `href` are structure without a page behind them yet. They
+ * are rendered inert and marked, rather than omitted or linked to a 404: the
+ * shape of the console is a decision worth showing, and a nav item that
+ * silently does nothing when clicked is worse than one that says it is not
+ * built. Give an item an `href` the moment its page exists and it becomes a
+ * link with no other change.
+ */
+type NavItem = { label: string; icon: typeof BarChart3; href?: string };
+type NavGroup = { heading: string; items: NavItem[] };
+
+const NAV: NavGroup[] = [
+  {
+    heading: "Command centre",
+    items: [
+      { href: "/", label: "Overview", icon: BarChart3 },
+      { href: "/analytics", label: "Analytics", icon: LineChart },
+    ],
+  },
+  {
+    heading: "People",
+    items: [
+      { href: "/creators", label: "Creators", icon: Users },
+      { href: "/supporters", label: "Supporters", icon: UsersRound },
+    ],
+  },
+  {
+    heading: "Money",
+    items: [
+      { href: "/transactions", label: "Transactions", icon: Receipt },
+      { href: "/settlements", label: "Settlements", icon: Landmark },
+      { href: "/subscriptions", label: "Subscriptions", icon: RefreshCw },
+    ],
+  },
+  {
+    heading: "Compliance",
+    items: [
+      { href: "/kyc", label: "KYC review", icon: ClipboardCheck },
+      { href: "/bank", label: "Bank review", icon: Landmark },
+    ],
+  },
+  {
+    heading: "Infrastructure",
+    items: [
+      { href: "/events", label: "Provider events", icon: Activity },
+      { href: "/webhooks", label: "Webhooks", icon: Webhook },
+    ],
+  },
+  {
+    heading: "Operations",
+    items: [
+      { href: "/support", label: "Support", icon: LifeBuoy },
+      { href: "/risk", label: "Risk & alerts", icon: ShieldAlert },
+    ],
+  },
+  {
+    heading: "System",
+    items: [
+      { href: "/settings", label: "Settings", icon: Settings },
+      { href: "/admins", label: "Admin users", icon: UserCog },
+      { href: "/audit", label: "Audit log", icon: FileClock },
+    ],
+  },
 ];
 
 function NavContent({ close }: { close?: () => void }) {
   const pathname = usePathname(); const router = useRouter(); const session = useAdminSession(); const [busy, setBusy] = useState(false);
-  // "/" is the console overview, which sits behind the gate this sign-out just
-  // invalidated: it answered 401 and parked the operator on an interstitial
-  // whose only button was "Go to sign in". Go there directly.
-  async function logout() { setBusy(true); await apiRequest("/v1/auth/logout", { method: "POST" }).catch(() => undefined); router.replace("/login"); }
+  async function logout() { setBusy(true); await apiRequest("/v1/auth/logout", { method: "POST" }).catch(() => undefined); router.replace("/"); }
   return <>
     <div className="brand"><span className="brand-mark" aria-hidden="true">🥔</span><div><strong>Potatopay</strong><small>Admin console</small></div></div>
     <div className="rule" />
-    <p className="eyebrow nav-label">Manage</p>
-    <nav aria-label="Admin navigation" className="nav-list">{NAV.map(({ href, label, icon: Icon }) => {
-      // Whole segments only. A bare startsWith made "/supporters" match
-      // "/support", so the Supporters screen lit up two navigation items.
-      const active = href === "/" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
-      return <Link key={href} href={href} onClick={close} className={`nav-link ${active ? "active" : ""}`} aria-current={active ? "page" : undefined}><Icon size={17} />{label}</Link>;
-    })}</nav>
+    <nav aria-label="Admin navigation" className="nav-groups">
+      {NAV.map((group) => (
+        <div className="nav-group" key={group.heading}>
+          <p className="eyebrow nav-label">{group.heading}</p>
+          <div className="nav-list">
+            {group.items.map(({ href, label, icon: Icon }) => {
+              // Kept for items added before their page exists. Everything in
+              // NAV has an href today, so this branch is currently unreached.
+              if (!href) {
+                return <span key={label} className="nav-link soon" aria-disabled="true"><Icon size={17} />{label}<em>soon</em></span>;
+              }
+              const active = href === "/" ? pathname === href : pathname.startsWith(href);
+              return (
+                <Link key={href} href={href} onClick={close} className={`nav-link ${active ? "active" : ""}`} aria-current={active ? "page" : undefined}>
+                  <Icon size={17} />{label}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </nav>
     <div className="sidebar-foot"><p className="signed-in">Signed in as <strong>@{session.username}</strong></p><button type="button" className="nav-link logout" disabled={busy} onClick={() => void logout()}><LogOut size={16} />{busy ? "Signing out…" : "Sign out"}</button></div>
   </>;
 }
