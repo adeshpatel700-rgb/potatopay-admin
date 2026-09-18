@@ -9,27 +9,43 @@
  * naming them means a new screen inherits the system instead of inventing a
  * fourth grey.
  */
+/*
+ * Warm neutrals, because the brand is warm.
+ *
+ * The console was built on cool slate greys — #f6f7f9 backgrounds, #0f172a
+ * text — sitting under a warm orange accent. That mismatch is why it read as a
+ * generic dashboard template with a logo dropped in: the greys said one thing
+ * and the brand said another, and the eye notices even when the viewer cannot
+ * name it. These are the creator app's own cream and ink, desaturated into a
+ * working greyscale, so the two products look like the same company.
+ *
+ * Every neutral here has a hint of the same warm hue. That is the whole trick;
+ * it is not a colour scheme so much as a decision to stop fighting the accent.
+ */
 :root {
-  --bg: #f6f7f9;
-  --surface: #ffffff;
-  --ink: #0f172a;          /* headings, numbers */
-  --body: #334155;         /* ordinary text */
-  --muted: #64748b;        /* labels, captions */
-  --faint: #94a3b8;        /* timestamps, hints */
-  --line: #e7e9ee;         /* card and table borders */
-  --line-soft: #f1f3f6;    /* row separators */
-  --soft: #f8fafc;         /* table headers, insets */
-  --accent: #c0672b;       /* the brand orange, used sparingly */
-  --accent-tint: #fdf3ec;
-  --green: #12715a;
-  --green-tint: #ecfdf5;
-  --orange: #a95b1a;
-  --orange-tint: #fff7ed;
-  --red: #b42318;
-  --red-tint: #fef2f2;
+  --bg: #f6f3ee;           /* warm paper, not blue-grey */
+  --surface: #fffdfa;      /* cards sit a shade above the page */
+  --ink: #211c16;          /* the brand's ink, used for headings and figures */
+  --body: #4a4239;
+  --muted: #7a6f63;
+  --faint: #a4988a;
+  --line: #e8e1d5;
+  --line-soft: #f1ece3;
+  --soft: #faf7f2;
+  --accent: #c0672b;
+  --accent-tint: #fbefe5;
+  --accent-deep: #9e5222;
+  /* Status colours pulled toward the same warmth so they sit in the palette
+     rather than on top of it. */
+  --green: #2f6b4f;
+  --green-tint: #edf5f0;
+  --orange: #a1601a;
+  --orange-tint: #fcf2e3;
+  --red: #a8392c;
+  --red-tint: #fbeeec;
   --radius: 12px;
-  --shadow: 0 1px 2px rgb(15 23 42 / 4%);
-  --shadow-lift: 0 1px 2px rgb(15 23 42 / 5%), 0 8px 24px rgb(15 23 42 / 6%);
+  --shadow: 0 1px 2px rgb(33 28 22 / 5%);
+  --shadow-lift: 0 1px 2px rgb(33 28 22 / 6%), 0 10px 28px rgb(33 28 22 / 8%);
 }
 * { box-sizing: border-box; }
 body {
@@ -50,7 +66,8 @@ button { cursor: pointer; }
 .app-shell { min-height: 100vh; display: flex; }
 .sidebar { width: 252px; flex: 0 0 252px; background: var(--surface); border-right: 1px solid var(--line); display: flex; flex-direction: column; padding: 22px 12px; }
 .brand { display: flex; align-items: center; gap: 11px; padding: 0 10px; }
-.brand-mark { width: 34px; height: 34px; border-radius: 10px; background: #f2c14b; display: grid; place-items: center; font-size: 18px; box-shadow: var(--shadow); }
+.brand-mark { width: 36px; height: 36px; border-radius: 11px; background: var(--accent-tint); display: grid; place-items: center; overflow: hidden; flex: 0 0 auto; }
+.brand-mark img { width: 30px; height: 30px; object-fit: contain; display: block; }
 .brand strong { display: block; font-size: 15px; letter-spacing: -.02em; }
 .brand small { display: block; margin-top: 2px; color: var(--faint); font-size: 9px; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; }
 .rule { height: 1px; background: var(--line); margin: 25px 10px 20px; }
@@ -79,7 +96,7 @@ button { cursor: pointer; }
 .sidebar-user-copy strong { display: block; font-size: 12.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
 .sidebar-user-copy small { display: block; margin-top: 1px; color: var(--faint); font-size: 11px; }
 /* A queue you have to click into to discover is a queue you forget. */
-.nav-badge { margin-left: auto; min-width: 20px; padding: 1px 6px; border-radius: 999px; background: #e7ebf1; color: var(--muted); font-size: 10.5px; font-weight: 700; text-align: center; }
+.nav-badge { margin-left: auto; min-width: 20px; padding: 1px 6px; border-radius: 999px; background: #ece5db; color: var(--muted); font-size: 10.5px; font-weight: 700; text-align: center; }
 .nav-link.active .nav-badge { background: rgb(192 103 43 / 14%); color: var(--accent); }
 .nav-badge.red { background: var(--red-tint); color: var(--red); }
 .signed-in { color: #8a949e; font-size: 11px; padding: 0 10px 10px; margin: 0; }
@@ -91,7 +108,7 @@ button { cursor: pointer; }
 .page-head h1 { margin: 6px 0 0; font-size: 28px; font-weight: 700; letter-spacing: -.03em; color: var(--ink); }
 .page-head p { margin: 7px 0 0; color: var(--muted); font-size: 13.5px; line-height: 1.55; max-width: 72ch; }
 .button { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); color: var(--body); padding: 8px 13px; font-size: 12.5px; font-weight: 600; box-shadow: var(--shadow); transition: background .15s ease, border-color .15s ease; }
-.button:hover { background: var(--soft); border-color: #d8dce4; }
+.button:hover { background: var(--soft); border-color: #dcd3c4; }
 .button svg { color: var(--faint); }
 .button:disabled { opacity: .5; cursor: not-allowed; }
 .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 24px; }
@@ -101,7 +118,7 @@ button { cursor: pointer; }
 .card-title p { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
 .view-link { display: inline-flex; align-items: center; gap: 5px; color: #374151; font-size: 12px; font-weight: 700; text-decoration: none; }
 .person { display: flex; align-items: center; gap: 11px; }
-.avatar { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: #f3f4f6; color: #374151; font-size: 12px; font-weight: 700; flex: 0 0 auto; }
+.avatar { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--accent-tint); color: var(--accent-deep); font-size: 12px; font-weight: 700; flex: 0 0 auto; }
 .person strong { display: block; font-size: 16px; }
 .person small { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
 .highlight { margin-top: 20px; }
@@ -145,7 +162,7 @@ tbody tr:last-child td { border-bottom: 0; }
 .table-person .avatar { width: 36px; height: 36px; font-size: 11px; }
 .table-person strong, .table-person small { display: block; }
 .table-person small { color: var(--muted); margin-top: 3px; }
-.pill { display: inline-flex; align-items: center; gap: 4px; border-radius: 6px; padding: 3px 7px; background: #eef1f5; color: var(--body); font-size: 10.5px; font-weight: 600; line-height: 1.5; text-transform: capitalize; white-space: nowrap; }
+.pill { display: inline-flex; align-items: center; gap: 4px; border-radius: 6px; padding: 3px 7px; background: #efe9df; color: var(--body); font-size: 10.5px; font-weight: 600; line-height: 1.5; text-transform: capitalize; white-space: nowrap; }
 .pill svg { flex: 0 0 auto; }
 .pill.green { background: var(--green-tint); color: var(--green); }
 .pill.orange { background: var(--orange-tint); color: var(--orange); }
@@ -167,7 +184,7 @@ tbody tr:last-child td { border-bottom: 0; }
 .detail label { display: block; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .1em; }
 .detail strong { display: block; margin-top: 7px; font: 700 13px ui-monospace, SFMono-Regular, Menlo, monospace; }
 .doc-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 9px; }
-.reason { width: 100%; resize: vertical; margin-top: 7px; border: 1px solid #d1d5db; padding: 10px; font-size: 13px; }
+.reason { width: 100%; resize: vertical; margin-top: 7px; border: 1px solid var(--line); padding: 10px; font-size: 13px; }
 .review-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
 .button.approve { background: #18794e; border-color: #18794e; color: #fff; }
 .button.reject { background: #b42318; border-color: #b42318; color: #fff; }
@@ -176,11 +193,11 @@ tbody tr:last-child td { border-bottom: 0; }
 /* Sign-in. The console has its own, because the creator app's session cookie
    belongs to a different hostname and is never sent here. */
 .login-card { width: min(340px, 100%); background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 28px 26px 24px; text-align: left; box-shadow: 0 1px 2px rgb(17 24 39 / 4%), 0 8px 24px rgb(17 24 39 / 6%); }
-.login-mark { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: #f3f4f6; color: var(--ink); margin-bottom: 16px; }
+.login-mark { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: var(--soft); color: var(--ink); margin-bottom: 16px; }
 .login-card h1 { margin: 0; font-size: 20px; letter-spacing: -.02em; color: var(--ink); }
 .login-card p { margin: 6px 0 20px; font-size: 13px; color: var(--muted); }
 .login-card label { display: block; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
-.login-card input { width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 12px; font-size: 14px; margin-bottom: 16px; background: #fff; color: var(--ink); }
+.login-card input { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 14px; margin-bottom: 16px; background: #fff; color: var(--ink); }
 .login-card input:focus { outline: 0; border-color: #9ca3af; box-shadow: 0 0 0 3px rgb(17 24 39 / 6%); }
 .login-card button { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 8px; background: var(--ink); color: #fff; padding: 11px 14px; font-size: 13px; font-weight: 700; }
 .login-card button:disabled { opacity: .45; cursor: not-allowed; }
@@ -190,7 +207,7 @@ tbody tr:last-child td { border-bottom: 0; }
 .center-state button { border: 0; border-radius: 7px; background: var(--ink); color: #fff; padding: 9px 14px; font-size: 12px; font-weight: 700; }
 /* ------------------------------------------------------------- analytics */
 .head-actions { display: flex; align-items: center; gap: 10px; }
-.segment { display: inline-flex; border: 1px solid #d1d5db; border-radius: 8px; overflow: hidden; background: #fff; }
+.segment { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; }
 .segment button { border: 0; border-left: 1px solid #e5e7eb; background: transparent; color: var(--muted); padding: 9px 13px; font-size: 12px; font-weight: 700; }
 .segment button:first-child { border-left: 0; }
 .segment button.active { background: var(--ink); color: #fff; }
@@ -250,7 +267,7 @@ tbody tr:last-child td { border-bottom: 0; }
 }
 
 .mobile-menu, .scrim, .mobile-sidebar { display: none; }
-@media (max-width: 900px) { .content { padding: 76px 20px 44px; } .desktop-sidebar { display: none; } .mobile-menu { display: grid; place-items: center; position: fixed; z-index: 30; top: 16px; left: 16px; width: 40px; height: 40px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; color: var(--ink); } .scrim { display: block; position: fixed; inset: 0; z-index: 40; border: 0; background: rgb(17 24 39 / 20%); } .mobile-sidebar { display: flex; position: fixed; inset: 0 auto 0 0; z-index: 50; height: 100vh; box-shadow: 12px 0 30px rgb(17 24 39 / 10%); } .close-menu { position: absolute; top: 14px; right: 12px; border: 0; background: transparent; color: var(--muted); } .grid-2, .kyc-layout { grid-template-columns: 1fr; } .stats { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 900px) { .content { padding: 76px 20px 44px; } .desktop-sidebar { display: none; } .mobile-menu { display: grid; place-items: center; position: fixed; z-index: 30; top: 16px; left: 16px; width: 40px; height: 40px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); } .scrim { display: block; position: fixed; inset: 0; z-index: 40; border: 0; background: rgb(17 24 39 / 20%); } .mobile-sidebar { display: flex; position: fixed; inset: 0 auto 0 0; z-index: 50; height: 100vh; box-shadow: 12px 0 30px rgb(17 24 39 / 10%); } .close-menu { position: absolute; top: 14px; right: 12px; border: 0; background: transparent; color: var(--muted); } .grid-2, .kyc-layout { grid-template-columns: 1fr; } .stats { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .page-head { align-items: flex-start; flex-direction: column; } .page-head h1 { font-size: 27px; } .stats { grid-template-columns: 1fr 1fr; gap: 14px; } .stat:nth-child(odd) { border-left: 0; padding-left: 0; } .stat strong { font-size: 21px; } .card { padding: 16px; } .detail-grid { grid-template-columns: 1fr; } }
 
 
@@ -349,7 +366,7 @@ tbody tr:last-child td { border-bottom: 0; }
   position: sticky; top: 0; z-index: 20;
   display: flex; align-items: center; gap: 16px;
   padding: 12px 36px;
-  background: rgb(255 255 255 / 92%);
+  background: rgb(255 253 250 / 90%);
   backdrop-filter: saturate(140%) blur(6px);
   border-bottom: 1px solid var(--line);
 }
@@ -379,7 +396,7 @@ tbody tr:last-child td { border-bottom: 0; }
 /* The chip carries the tone with the figure, so a tile that needs acting on
    reads as one object rather than a number with a coloured word above it. */
 .stat-tile { position: relative; padding: 16px; }
-.stat-chip { display: grid; place-items: center; width: 32px; height: 32px; margin-bottom: 12px; border-radius: 9px; background: #eef1f5; color: var(--muted); }
+.stat-chip { display: grid; place-items: center; width: 32px; height: 32px; margin-bottom: 12px; border-radius: 9px; background: #efe9df; color: var(--muted); }
 .stat-tile.green .stat-chip { background: var(--green-tint); color: var(--green); }
 .stat-tile.red .stat-chip { background: var(--red-tint); color: var(--red); }
 .stat-tile.orange .stat-chip { background: var(--orange-tint); color: var(--orange); }

@@ -1,5 +1,8 @@
 "use client";
 
+/* A 30px static brand mark needs no image optimiser. */
+/* eslint-disable @next/next/no-img-element */
+
 import Link from "next/link";
 import { Activity, BarChart3, ClipboardCheck, FileClock, Landmark, LifeBuoy, LineChart, LogOut, Menu, Receipt, RefreshCw, Settings, ShieldAlert, UserCog, Users, UsersRound, Webhook, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
@@ -94,7 +97,8 @@ function NavContent({ close }: { close?: () => void }) {
   }, [pathname]);
   async function logout() { setBusy(true); await apiRequest("/v1/auth/logout", { method: "POST" }).catch(() => undefined); router.replace("/"); }
   return <>
-    <div className="brand"><span className="brand-mark" aria-hidden="true">🥔</span><div><strong>Potatopay</strong><small>Admin console</small></div></div>
+    {/* The real mascot, not the emoji stand-in it shipped with. */}
+    <div className="brand"><span className="brand-mark"><img src="/logo.png" alt="" width={30} height={30} /></span><div><strong>Potatopay</strong><small>Admin console</small></div></div>
     <div className="rule" />
     <nav aria-label="Admin navigation" className="nav-groups">
       {NAV.map((group) => (
