@@ -407,3 +407,104 @@ tbody tr:last-child td { border-bottom: 0; }
   .topbar-search kbd { display: none; }
   .user-copy { display: none; }
 }
+
+/* ---------------------------------------------------------------- overview
+ *
+ * The command centre, rebuilt.
+ *
+ * Every class here is namespaced `ov-` on purpose. This file already carries
+ * `.delta`, `.chart`, `.bars` and `.up`/`.down` for the analytics screen, and
+ * a second definition of any of them would silently repaint that screen — which
+ * is exactly the bug that got shipped last time two blocks in this file shared
+ * a selector.
+ */
+.ov-head { align-items: flex-start; }
+.ov-head-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+/* A segmented control, not four buttons. The pressed state is a filled pill
+   inside a track, so which range is active reads without comparing borders. */
+.ov-range { display: inline-flex; padding: 3px; border: 1px solid var(--line); border-radius: 10px; background: var(--soft); }
+.ov-range button { border: 0; border-radius: 7px; background: transparent; color: var(--muted); padding: 6px 12px; font-size: 12px; font-weight: 600; transition: background .15s ease, color .15s ease; }
+.ov-range button:hover { color: var(--ink); }
+.ov-range button.active { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+
+.ov-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 24px; }
+.ov-kpi { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 16px; box-shadow: var(--shadow); min-width: 0; }
+.ov-kpi-head { display: flex; align-items: center; gap: 9px; }
+.ov-kpi-head small { color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ov-kpi .stat-chip { margin: 0; width: 28px; height: 28px; flex: 0 0 auto; }
+.ov-kpi-body { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; margin-top: 14px; }
+/* Proportional figures: a standalone headline looks gappy in tabular digits,
+   which the body sets globally for columns. */
+.ov-kpi-body strong { font-size: 29px; font-weight: 700; letter-spacing: -.03em; line-height: 1.05; font-variant-numeric: proportional-nums; }
+.ov-spark { flex: 0 0 auto; display: block; }
+.ov-spark-empty { display: block; width: 120px; height: 34px; }
+
+.ov-delta { display: inline-flex; align-items: center; gap: 5px; margin-top: 11px; font-size: 11.5px; font-weight: 700; }
+.ov-delta em { font-style: normal; font-weight: 500; color: var(--faint); }
+.ov-delta.good { color: var(--green); }
+.ov-delta.bad { color: var(--red); }
+.ov-delta.flat { color: var(--faint); font-weight: 500; }
+
+/* Asymmetric on purpose: the chart is the thing you look at, the queue is the
+   thing you act on, and giving them equal width made neither feel primary. */
+.ov-main { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(320px, 1fr); gap: 16px; margin-top: 16px; align-items: start; }
+.ov-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+.ov-panel { padding: 18px 20px 20px; }
+.ov-panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; padding-bottom: 16px; border-bottom: 1px solid var(--line-soft); }
+.ov-panel-head h2 { margin: 0; font-size: 15px; letter-spacing: -.01em; }
+.ov-panel-head p { margin: 5px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+/* Columns: capped width so a short period does not draw slabs, a 2px surface
+   gap doing the separating, and a square baseline with a rounded cap. */
+.ov-chart { display: flex; align-items: flex-end; gap: 2px; margin-top: 18px; padding-top: 22px; }
+.ov-col { position: relative; flex: 1 1 0; min-width: 0; max-width: 24px; height: 100%; display: flex; align-items: flex-end; justify-content: center; }
+.ov-col-fill { display: block; width: 100%; background: var(--accent); border-radius: 4px 4px 0 0; transition: background .15s ease; }
+.ov-col-fill.zero { background: var(--line); border-radius: 2px; }
+.ov-col:hover .ov-col-fill { background: var(--accent-deep); }
+.ov-col-value { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); color: var(--ink); font-size: 11px; font-weight: 700; white-space: nowrap; }
+
+.ov-queue { display: grid; gap: 6px; margin-top: 14px; }
+.ov-queue-item { display: flex; align-items: center; gap: 11px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--body); text-decoration: none; transition: border-color .15s ease, background .15s ease; }
+.ov-queue-item:hover { border-color: #dcd3c4; background: var(--soft); }
+.ov-queue-item svg:last-child { color: var(--faint); flex: 0 0 auto; }
+.ov-queue-chip { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: #efe9df; color: var(--muted); flex: 0 0 auto; }
+.ov-queue-copy { min-width: 0; flex: 1; }
+.ov-queue-copy strong { display: block; font-size: 13px; font-weight: 600; }
+.ov-queue-copy small { display: block; margin-top: 2px; color: var(--faint); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ov-queue-count { font-size: 17px; font-weight: 700; color: var(--faint); font-variant-numeric: proportional-nums; }
+/* A queue with work in it earns colour; an empty one stays quiet, so a red
+   number always means something rather than being permanent decoration. */
+.ov-queue-item.live { border-color: rgb(168 57 44 / 28%); background: var(--red-tint); }
+.ov-queue-item.live .ov-queue-chip { background: rgb(168 57 44 / 12%); color: var(--red); }
+.ov-queue-item.live .ov-queue-count { color: var(--red); }
+
+.ov-clear { display: grid; justify-items: center; gap: 6px; padding: 38px 16px 34px; text-align: center; color: var(--muted); }
+.ov-clear svg { color: var(--green); }
+.ov-clear strong { font-size: 15px; }
+.ov-clear span { font-size: 12px; max-width: 34ch; line-height: 1.5; }
+
+.ov-ranks { list-style: none; margin: 0; padding: 0; }
+.ov-ranks li { display: flex; align-items: center; gap: 11px; padding: 13px 0; border-bottom: 1px solid var(--line-soft); }
+.ov-ranks li:last-child { border-bottom: 0; padding-bottom: 2px; }
+.ov-rank { width: 16px; flex: 0 0 auto; color: var(--faint); font-size: 12px; font-weight: 700; }
+.ov-ranks .avatar { width: 34px; height: 34px; border-radius: 10px; font-size: 11px; }
+.ov-rank-body { min-width: 0; flex: 1; }
+.ov-rank-body strong { display: block; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ov-rank-body small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* The share bar is the comparison the old rows were missing: five formatted
+   amounts tell you the order, not the gap between first and fifth. */
+.ov-share { display: block; margin-top: 7px; height: 3px; border-radius: 999px; background: var(--line-soft); overflow: hidden; }
+.ov-share-fill { display: block; height: 100%; border-radius: 999px; background: var(--accent); opacity: .55; }
+
+@media (max-width: 1180px) {
+  .ov-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ov-main { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 760px) {
+  .ov-kpis { grid-template-columns: minmax(0, 1fr); }
+  .ov-cols { grid-template-columns: minmax(0, 1fr); }
+  .ov-head-actions { width: 100%; }
+  .ov-range { flex: 1; }
+  .ov-range button { flex: 1; }
+}
