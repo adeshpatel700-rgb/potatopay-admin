@@ -224,18 +224,18 @@ export default function AdminEventInspector() {
                   <tr key={row.id}>
                     <td>
                       <strong>{row.eventType}</strong>
-                      <small style={{ display: "block", marginTop: 4, color: "#66717c", fontFamily: "ui-monospace, monospace" }}>
+                      <small style={{ display: "block", marginTop: 4, color: "var(--muted)", fontFamily: "ui-monospace, monospace" }}>
                         {row.providerEventId}
                       </small>
                     </td>
                     <td><span className="pill">{row.provider}</span></td>
-                    <td><span>{dateLabel(row.receivedAt)}</span><small style={{ display: "block", marginTop: 4, color: "#66717c" }}>{relative(row.receivedAt)}</small></td>
+                    <td><span>{dateLabel(row.receivedAt)}</span><small style={{ display: "block", marginTop: 4, color: "var(--muted)" }}>{relative(row.receivedAt)}</small></td>
                     <td>
                       {row.processedAt
                         ? <span className="pill green">Processed</span>
                         : <span className="pill red">Not processed</span>}
                       {row.processingError && (
-                        <small style={{ display: "block", marginTop: 4, color: "#b42318" }}>{row.processingError}</small>
+                        <small style={{ display: "block", marginTop: 4, color: "var(--red)" }}>{row.processingError}</small>
                       )}
                     </td>
                     <td><button type="button" className="button" onClick={() => void openEvent(row.id)}>Inspect</button></td>
@@ -277,7 +277,7 @@ export default function AdminEventInspector() {
                 <div><strong>Processing error</strong><small>{detail.processingError}</small></div>
               </div>
             )}
-            <label style={{ display: "block", marginTop: 18, color: "#66717c", fontSize: 11, fontWeight: 700 }}>
+            <label style={{ display: "block", marginTop: 18, color: "var(--muted)", fontSize: 11, fontWeight: 700 }}>
               PAYLOAD
               {/* Redaction happens at write time, so email, contact, card, bank,
                   wallet, vpa, token and account_number were never stored. */}

@@ -64,13 +64,13 @@ export default function AdminSubscriptions() {
               <tbody>
                 {data.items.map((row) => (
                   <tr key={row.id}>
-                    <td><strong>@{row.username}</strong><small style={{ display: "block", marginTop: 4, color: "#66717c" }}>{row.displayName}</small></td>
-                    <td><span className="pill">{row.plan}</span><small style={{ display: "block", marginTop: 6, color: "#66717c" }}>{row.billingCycle}</small></td>
+                    <td><strong>@{row.username}</strong><small style={{ display: "block", marginTop: 4, color: "var(--muted)" }}>{row.displayName}</small></td>
+                    <td><span className="pill">{row.plan}</span><small style={{ display: "block", marginTop: 6, color: "var(--muted)" }}>{row.billingCycle}</small></td>
                     <td className="amount">{rupees(row.amountPaise)}</td>
                     <td><span className={`pill ${statusClass(row.status)}`}>{row.status}</span></td>
-                    <td><small style={{ color: "#66717c" }}>{dateLabel(row.startedAt)} → {dateLabel(row.expiresAt)}</small>{row.cancelledAt && <small style={{ display: "block", marginTop: 4, color: "#b42318", fontWeight: 700 }}>Cancelled {dateLabel(row.cancelledAt)}</small>}</td>
-                    <td><span className={`pill ${row.currentPlan === "free" ? "" : "green"}`}>{row.currentPlan}</span><small style={{ display: "block", marginTop: 6, color: "#66717c" }}>{row.currentPlanExpiresAt ? `until ${dateLabel(row.currentPlanExpiresAt)}` : "no expiry"}</small></td>
-                    <td><small style={{ color: "#66717c" }}>{timeLabel(row.createdAt)}</small>{row.paymentId && <small style={{ display: "block", marginTop: 4, color: "#66717c" }}>{row.paymentId}</small>}</td>
+                    <td><small style={{ color: "var(--muted)" }}>{dateLabel(row.startedAt)} → {dateLabel(row.expiresAt)}</small>{row.cancelledAt && <small style={{ display: "block", marginTop: 4, color: "var(--red)", fontWeight: 700 }}>Cancelled {dateLabel(row.cancelledAt)}</small>}</td>
+                    <td><span className={`pill ${row.currentPlan === "free" ? "" : "green"}`}>{row.currentPlan}</span><small style={{ display: "block", marginTop: 6, color: "var(--muted)" }}>{row.currentPlanExpiresAt ? `until ${dateLabel(row.currentPlanExpiresAt)}` : "no expiry"}</small></td>
+                    <td><small style={{ color: "var(--muted)" }}>{timeLabel(row.createdAt)}</small>{row.paymentId && <small style={{ display: "block", marginTop: 4, color: "var(--muted)" }}>{row.paymentId}</small>}</td>
                   </tr>
                 ))}
               </tbody>

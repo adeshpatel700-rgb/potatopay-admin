@@ -86,16 +86,16 @@ export default function AdminTransactions() {
               <tbody>
                 {data.items.map((row) => (
                   <tr key={row.id}>
-                    <td><strong>{timeLabel(row.capturedAt ?? row.createdAt)}</strong><small style={{ display: "block", marginTop: 4, color: "#66717c" }}>{row.paymentId ?? row.orderId ?? "—"}</small></td>
-                    <td><strong>@{row.creatorUsername}</strong>{row.creatorName && <small style={{ display: "block", marginTop: 4, color: "#66717c" }}>{row.creatorName}</small>}</td>
-                    <td>{row.supporterName}{row.hasMedia && <small style={{ display: "block", marginTop: 4, color: "#66717c" }}>media share</small>}</td>
+                    <td><strong>{timeLabel(row.capturedAt ?? row.createdAt)}</strong><small style={{ display: "block", marginTop: 4, color: "var(--muted)" }}>{row.paymentId ?? row.orderId ?? "—"}</small></td>
+                    <td><strong>@{row.creatorUsername}</strong>{row.creatorName && <small style={{ display: "block", marginTop: 4, color: "var(--muted)" }}>{row.creatorName}</small>}</td>
+                    <td>{row.supporterName}{row.hasMedia && <small style={{ display: "block", marginTop: 4, color: "var(--muted)" }}>media share</small>}</td>
                     <td className="amount">{rupees(row.amountPaise)}</td>
                     <td className="amount">{row.gatewayFeePaise ? rupees(row.gatewayFeePaise) : "—"}</td>
                     <td className="amount">{row.transferAmountPaise ? rupees(row.transferAmountPaise) : "—"}</td>
                     <td><span className={`pill ${statusClass(row.status)}`}>{row.status}</span></td>
                     <td>
                       {row.transferId
-                        ? <><span className={`pill ${statusClass(row.transferStatus ?? "sent")}`}>{row.transferStatus ?? "sent"}</span><small style={{ display: "block", marginTop: 4, color: "#66717c" }}>{row.transferId}</small></>
+                        ? <><span className={`pill ${statusClass(row.transferStatus ?? "sent")}`}>{row.transferStatus ?? "sent"}</span><small style={{ display: "block", marginTop: 4, color: "var(--muted)" }}>{row.transferId}</small></>
                         : row.status === "captured"
                           ? <span className="pill red"><AlertTriangle size={11} /> not transferred</span>
                           : <span className="pill">—</span>}

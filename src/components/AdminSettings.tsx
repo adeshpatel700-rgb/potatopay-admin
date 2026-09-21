@@ -18,7 +18,7 @@ function Rows({ items }: { items: Array<{ label: string; value: React.ReactNode;
         <tbody>
           {items.map((item) => (
             <tr key={item.label}>
-              <td style={{ width: "42%" }}><strong>{item.label}</strong>{item.note && <small style={{ display: "block", marginTop: 4, color: "#66717c" }}>{item.note}</small>}</td>
+              <td style={{ width: "42%" }}><strong>{item.label}</strong>{item.note && <small style={{ display: "block", marginTop: 4, color: "var(--muted)" }}>{item.note}</small>}</td>
               <td>{item.value}</td>
             </tr>
           ))}

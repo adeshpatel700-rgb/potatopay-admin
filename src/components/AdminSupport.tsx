@@ -296,7 +296,7 @@ export default function AdminSupport() {
                 ))}
               </div>
 
-              <label style={{ display: "block", marginTop: 18, color: "#66717c", fontSize: 12, fontWeight: 700 }}>
+              <label style={{ display: "block", marginTop: 18, color: "var(--muted)", fontSize: 12, fontWeight: 700 }}>
                 {internal ? "Internal note (the creator will never see this)" : "Reply to the creator"}
                 <textarea className="reason" rows={4} value={reply} onChange={(event) => setReply(event.target.value.slice(0, 4000))} />
               </label>

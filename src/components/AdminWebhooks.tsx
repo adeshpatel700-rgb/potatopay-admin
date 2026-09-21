@@ -64,7 +64,7 @@ export default function AdminWebhooks() {
                     <td>{row.total.toLocaleString("en-IN")}</td>
                     <td>{row.failed > 0 ? <span className="pill red">{row.failed}</span> : <span className="pill green">0</span>}</td>
                     <td>{row.unprocessed > 0 ? <span className="pill orange">{row.unprocessed}</span> : <span className="pill green">0</span>}</td>
-                    <td><small style={{ color: "#66717c" }}>{sinceLabel(row.lastReceived)}</small></td>
+                    <td><small style={{ color: "var(--muted)" }}>{sinceLabel(row.lastReceived)}</small></td>
                   </tr>
                 ))}
               </tbody>
@@ -83,10 +83,10 @@ export default function AdminWebhooks() {
               <tbody>
                 {data.failures.map((row) => (
                   <tr key={row.id}>
-                    <td><small style={{ color: "#66717c" }}>{timeLabel(row.receivedAt)}</small></td>
+                    <td><small style={{ color: "var(--muted)" }}>{timeLabel(row.receivedAt)}</small></td>
                     <td><strong>{row.eventType}</strong></td>
-                    <td><small style={{ fontFamily: "ui-monospace, monospace", color: "#66717c" }}>{row.providerEventId ?? "—"}</small></td>
-                    <td><small style={{ color: "#b42318", fontWeight: 700 }}>{row.error}</small></td>
+                    <td><small style={{ fontFamily: "ui-monospace, monospace", color: "var(--muted)" }}>{row.providerEventId ?? "—"}</small></td>
+                    <td><small style={{ color: "var(--red)", fontWeight: 700 }}>{row.error}</small></td>
                   </tr>
                 ))}
               </tbody>

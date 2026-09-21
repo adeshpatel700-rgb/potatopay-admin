@@ -42,7 +42,7 @@ export default function AdminUsers() {
         action={<button type="button" className="button" onClick={() => void reload()} disabled={loading}><RefreshCw size={14} />Refresh</button>}
       />
       {error && <div className="error" role="alert">{error}</div>}
-      {notice && <div className="error" role="status" style={{ background: "#ecfdf3", color: "#12715a", borderColor: "#a7e3c9" }}>{notice}</div>}
+      {notice && <div className="error" role="status" style={{ background: "var(--green-tint)", color: "var(--green)", borderColor: "var(--green-line)" }}>{notice}</div>}
 
       <section className="card table-card">
         <div className="table-head">
@@ -57,10 +57,10 @@ export default function AdminUsers() {
               <tbody>
                 {data.items.map((row) => (
                   <tr key={row.id}>
-                    <td><strong>@{row.username}</strong><small style={{ display: "block", marginTop: 4, color: "#66717c" }}>{row.displayName}</small>{row.isSelf && <small style={{ display: "block", marginTop: 4, color: "#66717c" }}>This is you</small>}</td>
-                    <td><small>{row.email ?? "No email"}</small>{!row.emailVerified && <small style={{ display: "block", marginTop: 4, color: "#b4540a" }}>unverified</small>}</td>
+                    <td><strong>@{row.username}</strong><small style={{ display: "block", marginTop: 4, color: "var(--muted)" }}>{row.displayName}</small>{row.isSelf && <small style={{ display: "block", marginTop: 4, color: "var(--muted)" }}>This is you</small>}</td>
+                    <td><small>{row.email ?? "No email"}</small>{!row.emailVerified && <small style={{ display: "block", marginTop: 4, color: "var(--orange)" }}>unverified</small>}</td>
                     <td>{row.actionCount.toLocaleString("en-IN")}</td>
-                    <td><small style={{ color: "#66717c" }}>{timeLabel(row.lastLoginAt)}</small></td>
+                    <td><small style={{ color: "var(--muted)" }}>{timeLabel(row.lastLoginAt)}</small></td>
                     <td>
                       {/* Self-demotion is refused by the API too. Disabling it
                           here just avoids offering a button that always fails. */}
@@ -78,7 +78,7 @@ export default function AdminUsers() {
 
       <section className="card" style={{ marginTop: 18, padding: 20 }}>
         <strong style={{ display: "flex", alignItems: "center", gap: 8 }}><UserPlus size={16} /> Grant console access</strong>
-        <p style={{ marginTop: 8, fontSize: 13, color: "#66717c", maxWidth: 620 }}>
+        <p style={{ marginTop: 8, fontSize: 13, color: "var(--muted)", maxWidth: 620 }}>
           Paste the creator id of an existing account. Admin access is full access — it can hold pages, pause plans,
           see full bank account numbers and connect payouts, so grant it to people, not to shared logins.
         </p>
@@ -88,7 +88,7 @@ export default function AdminUsers() {
             onChange={(event) => setPromote(event.target.value.trim())}
             placeholder="creator id (UUID)"
             aria-label="Creator id to promote"
-            style={{ flex: "1 1 320px", minWidth: 0, padding: "10px 12px", border: "1px solid #d6d3cc", borderRadius: 8, fontFamily: "ui-monospace, monospace", fontSize: 13 }}
+            style={{ flex: "1 1 320px", minWidth: 0, padding: "10px 12px", border: "1px solid var(--line)", borderRadius: 8, fontFamily: "ui-monospace, monospace", fontSize: 13 }}
           />
           <button type="button" className="button" disabled={promote.length < 36 || busyId === promote} onClick={() => void setRole(promote, "admin")}>
             <UserPlus size={14} />{busyId === promote ? "Granting…" : "Grant admin"}

@@ -64,7 +64,7 @@ export default function AdminRisk() {
           <Panel icon={AlertTriangle} title="Razorpay account errors" note="Payouts cannot complete" empty={data.routeErrors.length === 0}>
             <table><caption className="sr-only">Route errors</caption>
               <thead><tr><th>Creator</th><th>Status</th><th>Error</th><th>Last checked</th></tr></thead>
-              <tbody>{data.routeErrors.map((row) => <tr key={row.username}><td><strong>@{row.username}</strong></td><td><span className="pill orange">{row.status ?? "unknown"}</span></td><td><small style={{ color: "#b42318", fontWeight: 700 }}>{row.error}</small></td><td><small style={{ color: "#66717c" }}>{timeLabel(row.syncedAt)}</small></td></tr>)}</tbody>
+              <tbody>{data.routeErrors.map((row) => <tr key={row.username}><td><strong>@{row.username}</strong></td><td><span className="pill orange">{row.status ?? "unknown"}</span></td><td><small style={{ color: "var(--red)", fontWeight: 700 }}>{row.error}</small></td><td><small style={{ color: "var(--muted)" }}>{timeLabel(row.syncedAt)}</small></td></tr>)}</tbody>
             </table>
           </Panel>
 
@@ -85,7 +85,7 @@ export default function AdminRisk() {
           <Panel icon={ShieldAlert} title="Tips of ₹5,000 or more" note="Last 30 days, largest first" empty={data.largeTips.length === 0}>
             <table><caption className="sr-only">Large tips</caption>
               <thead><tr><th>When</th><th>Creator</th><th>Supporter</th><th>Amount</th><th>Status</th></tr></thead>
-              <tbody>{data.largeTips.map((row) => <tr key={row.id}><td><small style={{ color: "#66717c" }}>{timeLabel(row.createdAt)}</small></td><td><strong>@{row.username}</strong></td><td>{row.supporterName}</td><td className="amount">{rupees(row.amountPaise)}</td><td><span className="pill">{row.status}</span></td></tr>)}</tbody>
+              <tbody>{data.largeTips.map((row) => <tr key={row.id}><td><small style={{ color: "var(--muted)" }}>{timeLabel(row.createdAt)}</small></td><td><strong>@{row.username}</strong></td><td>{row.supporterName}</td><td className="amount">{rupees(row.amountPaise)}</td><td><span className="pill">{row.status}</span></td></tr>)}</tbody>
             </table>
           </Panel>
 
@@ -95,7 +95,7 @@ export default function AdminRisk() {
               <tbody>{data.restrictedAccounts.map((row) => <tr key={row.username}>
                 <td><strong>@{row.username}</strong></td>
                 <td><div className="stack">{row.deactivatedAt && <span className="pill red">Deactivated</span>}{row.planPausedAt && <span className="pill red">Plan paused</span>}{row.pageHeldAt && <span className="pill red">Page held</span>}{row.payoutsHeldAt && <span className="pill orange">Settlements held</span>}</div></td>
-                <td><small style={{ color: "#66717c" }}>{row.reason ?? "No reason recorded"}</small></td>
+                <td><small style={{ color: "var(--muted)" }}>{row.reason ?? "No reason recorded"}</small></td>
               </tr>)}</tbody>
             </table>
           </Panel>

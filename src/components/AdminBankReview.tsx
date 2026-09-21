@@ -184,7 +184,7 @@ export default function AdminBankReview() {
                     @{item.creator.username} · {item.bankName} {item.accountNumber} · {dateLabel(item.submittedAt)}
                   </small>
                   {item.duplicateClaims > 0 && (
-                    <small style={{ color: "#b42318", fontWeight: 700 }}>
+                    <small style={{ color: "var(--red)", fontWeight: 700 }}>
                       Also claimed by {item.duplicateClaims} other creator{item.duplicateClaims === 1 ? "" : "s"}
                     </small>
                   )}
@@ -243,7 +243,7 @@ export default function AdminBankReview() {
               </div>
 
               <div style={{ marginTop: 18 }}>
-                <label style={{ color: "#66717c", fontSize: 11, fontWeight: 700 }}>PROOF DOCUMENT</label>
+                <label style={{ color: "var(--muted)", fontSize: 11, fontWeight: 700 }}>PROOF DOCUMENT</label>
                 <div className="doc-list">
                   {selected.document ? (
                     <button type="button" className="button" onClick={() => openDocument(selected.document!.type)}>
@@ -252,7 +252,7 @@ export default function AdminBankReview() {
                       {selected.document.filename ? ` · ${selected.document.filename}` : ""}
                     </button>
                   ) : (
-                    <small style={{ color: "#b42318", fontWeight: 700 }}>
+                    <small style={{ color: "var(--red)", fontWeight: 700 }}>
                       No document uploaded. Request resubmission rather than approving.
                     </small>
                   )}
@@ -268,7 +268,7 @@ export default function AdminBankReview() {
                 </div>
               )}
 
-              <label style={{ display: "block", marginTop: 18, color: "#66717c", fontSize: 12, fontWeight: 700 }}>
+              <label style={{ display: "block", marginTop: 18, color: "var(--muted)", fontSize: 12, fontWeight: 700 }}>
                 Review reason <span style={{ fontWeight: 400 }}>(required unless approving — the creator is shown this)</span>
                 <textarea
                   className="reason"

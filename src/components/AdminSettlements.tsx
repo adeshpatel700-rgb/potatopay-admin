@@ -70,16 +70,16 @@ export default function AdminSettlements() {
               <tbody>
                 {data.items.map((row) => (
                   <tr key={row.id}>
-                    <td><strong>@{row.username}</strong><small style={{ display: "block", marginTop: 4, color: "#66717c" }}>{row.displayName}</small>{row.accountId && <small style={{ display: "block", marginTop: 4, color: "#66717c" }}>{row.accountId}</small>}</td>
+                    <td><strong>@{row.username}</strong><small style={{ display: "block", marginTop: 4, color: "var(--muted)" }}>{row.displayName}</small>{row.accountId && <small style={{ display: "block", marginTop: 4, color: "var(--muted)" }}>{row.accountId}</small>}</td>
                     <td>
                       <span className={`pill ${statusClass(row.status)}`}>{row.status.replaceAll("_", " ")}</span>
-                      {row.error && <small style={{ display: "block", marginTop: 6, color: "#b42318", fontWeight: 700 }}>{row.error}</small>}
+                      {row.error && <small style={{ display: "block", marginTop: 6, color: "var(--red)", fontWeight: 700 }}>{row.error}</small>}
                     </td>
                     <td><div className="stack"><span className={`pill ${statusClass(row.kycStatus)}`}>KYC {row.kycStatus.replaceAll("_", " ")}</span><span className={`pill ${statusClass(row.bankStatus)}`}>Bank {row.bankStatus.replaceAll("_", " ")}</span></div></td>
                     <td className="amount">{rupees(row.capturedPaise)}</td>
                     <td className="amount">{rupees(row.transferredPaise)}</td>
-                    <td>{row.stuckCount > 0 ? <><span className="pill red"><AlertTriangle size={11} /> {row.stuckCount}</span><small style={{ display: "block", marginTop: 4, color: "#b42318", fontWeight: 700 }}>{rupees(row.stuckPaise)}</small></> : <span className="pill green">none</span>}</td>
-                    <td><small style={{ color: "#66717c" }}>{sinceLabel(row.syncedAt)}</small></td>
+                    <td>{row.stuckCount > 0 ? <><span className="pill red"><AlertTriangle size={11} /> {row.stuckCount}</span><small style={{ display: "block", marginTop: 4, color: "var(--red)", fontWeight: 700 }}>{rupees(row.stuckPaise)}</small></> : <span className="pill green">none</span>}</td>
+                    <td><small style={{ color: "var(--muted)" }}>{sinceLabel(row.syncedAt)}</small></td>
                   </tr>
                 ))}
               </tbody>

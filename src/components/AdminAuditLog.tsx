@@ -52,11 +52,11 @@ export default function AdminAuditLog() {
               <tbody>
                 {data.items.map((row) => (
                   <tr key={row.id}>
-                    <td><small style={{ color: "#66717c" }}>{timeLabel(row.createdAt)}</small></td>
+                    <td><small style={{ color: "var(--muted)" }}>{timeLabel(row.createdAt)}</small></td>
                     <td><span className={`pill ${tone(row.action)}`}>{row.action.replaceAll("_", " ")}</span></td>
-                    <td>{row.targetUsername ? <><strong>@{row.targetUsername}</strong>{row.targetName && <small style={{ display: "block", marginTop: 4, color: "#66717c" }}>{row.targetName}</small>}</> : <small style={{ color: "#66717c" }}>account deleted</small>}</td>
+                    <td>{row.targetUsername ? <><strong>@{row.targetUsername}</strong>{row.targetName && <small style={{ display: "block", marginTop: 4, color: "var(--muted)" }}>{row.targetName}</small>}</> : <small style={{ color: "var(--muted)" }}>account deleted</small>}</td>
                     <td><strong>@{row.actorUsername}</strong></td>
-                    <td><small style={{ color: "#66717c" }}>{row.reason ?? "—"}</small></td>
+                    <td><small style={{ color: "var(--muted)" }}>{row.reason ?? "—"}</small></td>
                   </tr>
                 ))}
               </tbody>

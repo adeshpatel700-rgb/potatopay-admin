@@ -12,10 +12,10 @@ import { useId, useMemo, useState } from "react";
  */
 
 const TONES: Record<string, string> = {
-  blue: "#2a5fd9",
-  green: "#18794e",
-  red: "#b42318",
-  grey: "#9aa2aa",
+  blue: "var(--blue)",
+  green: "var(--green)",
+  red: "var(--red)",
+  grey: "var(--faint)",
 };
 
 const WIDTH = 720;
@@ -217,7 +217,7 @@ export function Donut({ slices }: { slices: Slice[] }) {
   return (
     <div className="donut">
       <svg viewBox="0 0 140 140" role="img" aria-label="Distribution">
-        <circle cx="70" cy="70" r={radius} fill="none" stroke="#f0f1f3" strokeWidth="18" />
+        <circle cx="70" cy="70" r={radius} fill="none" stroke="var(--line-soft)" strokeWidth="18" />
         {arcs.map((arc) => (
           <circle
             key={arc.label}

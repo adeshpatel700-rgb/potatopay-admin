@@ -338,7 +338,7 @@ export default function AdminCreatorControls({
             {settlement.requirements.length > 0 && (
               <small>Razorpay still needs: {settlement.requirements.map((item) => item.field_reference || item.reason_code || "additional information").join(", ")}</small>
             )}
-            {settlement.error && <small style={{ color: "#b42318", fontWeight: 700 }}>{settlement.error}</small>}
+            {settlement.error && <small style={{ color: "var(--red)", fontWeight: 700 }}>{settlement.error}</small>}
             {settlement.accountId && <small>Linked account: {settlement.accountId}</small>}
           </div>
           <button type="button" className="button" disabled={checkingSettlement} onClick={() => void recheckSettlement()}>
@@ -356,7 +356,7 @@ export default function AdminCreatorControls({
                 Enter the personal PAN from this creator&apos;s approved KYC and a real phone number, and Route
                 creates their linked account. Or paste an existing Razorpay Account Id to attach one made by hand.
               </small>
-              {connectNotice && <small style={{ color: "#12715a", fontWeight: 700 }}>{connectNotice}</small>}
+              {connectNotice && <small style={{ color: "var(--green)", fontWeight: 700 }}>{connectNotice}</small>}
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10 }}>
                 <input
                   value={connectPan}
@@ -364,7 +364,7 @@ export default function AdminCreatorControls({
                   placeholder="ABCDE1234F"
                   aria-label="Approved PAN"
                   disabled={connecting || Boolean(connectAccountId.trim())}
-                  style={{ flex: "1 1 150px", minWidth: 0, padding: "9px 11px", border: "1px solid #d6d3cc", borderRadius: 8, fontFamily: "ui-monospace, monospace", fontSize: 13 }}
+                  style={{ flex: "1 1 150px", minWidth: 0, padding: "9px 11px", border: "1px solid var(--line)", borderRadius: 8, fontFamily: "ui-monospace, monospace", fontSize: 13 }}
                 />
                 <input
                   value={connectPhone}
@@ -373,7 +373,7 @@ export default function AdminCreatorControls({
                   inputMode="numeric"
                   aria-label="Payout phone"
                   disabled={connecting || Boolean(connectAccountId.trim())}
-                  style={{ flex: "1 1 150px", minWidth: 0, padding: "9px 11px", border: "1px solid #d6d3cc", borderRadius: 8, fontFamily: "ui-monospace, monospace", fontSize: 13 }}
+                  style={{ flex: "1 1 150px", minWidth: 0, padding: "9px 11px", border: "1px solid var(--line)", borderRadius: 8, fontFamily: "ui-monospace, monospace", fontSize: 13 }}
                 />
                 <input
                   value={connectAccountId}
@@ -381,7 +381,7 @@ export default function AdminCreatorControls({
                   placeholder="or acc_XXXXXXXXXXXX"
                   aria-label="Existing Razorpay account id"
                   disabled={connecting}
-                  style={{ flex: "1 1 180px", minWidth: 0, padding: "9px 11px", border: "1px solid #d6d3cc", borderRadius: 8, fontFamily: "ui-monospace, monospace", fontSize: 13 }}
+                  style={{ flex: "1 1 180px", minWidth: 0, padding: "9px 11px", border: "1px solid var(--line)", borderRadius: 8, fontFamily: "ui-monospace, monospace", fontSize: 13 }}
                 />
                 <button
                   type="button"

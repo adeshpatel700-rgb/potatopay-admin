@@ -9,8 +9,10 @@
  * doing the separating, and a label only on the point worth naming.
  */
 
-const ACCENT = "#c0672b";
-const SURFACE = "#fffdfa";
+/* Read from the stylesheet rather than copied from it: SVG paint attributes
+   accept var(), so a change to --accent repaints these marks too. */
+const ACCENT = "var(--accent)";
+const SURFACE = "var(--surface)";
 
 function path(values: number[], width: number, height: number, pad: number): { line: string; area: string; last: { x: number; y: number } } {
   const max = Math.max(...values, 1);
