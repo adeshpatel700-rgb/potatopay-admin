@@ -4,7 +4,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link";
-import { Activity, BarChart3, ClipboardCheck, FileClock, Landmark, LifeBuoy, LineChart, LogOut, Menu, Receipt, RefreshCw, Settings, ShieldAlert, UserCog, Users, UsersRound, Webhook, X } from "lucide-react";
+import { Activity, BarChart3, ClipboardCheck, FileClock, Landmark, LifeBuoy, LineChart, LogOut, Menu, Receipt, RefreshCw, Settings, ShieldAlert, TicketPercent, UserCog, Users, UsersRound, Webhook, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { apiRequest } from "@/lib/api-client";
@@ -47,6 +47,7 @@ const NAV: NavGroup[] = [
       { href: "/transactions", label: "Transactions", icon: Receipt },
       { href: "/settlements", label: "Settlements", icon: Landmark, badge: "stuckTransfers" },
       { href: "/subscriptions", label: "Subscriptions", icon: RefreshCw },
+      { href: "/coupons", label: "Coupons", icon: TicketPercent },
     ],
   },
   {
