@@ -5,11 +5,11 @@ import { ArrowLeft, ArrowRight, RefreshCw, ShieldCheck, SlidersHorizontal, Users
 import { useCallback, useEffect, useRef, useState } from "react";
 import { apiRequest, formatInr } from "@/lib/api-client";
 import AdminCreatorControls, { type CreatorRestrictions } from "./AdminCreatorControls";
+import { dateLabel } from "./admin-shared";
 
 type Creator = { id: string; username: string; displayName: string; email: string | null; plan: string; planExpiresAt: string | null; createdAt: string; isPublic: boolean; emailVerified: boolean; totalTips: number; totalAmountPaise: number; mediaShareCount: number; lastTipAt: string | null; kycStatus: string; bankStatus: string; settlement: { accountId: string | null; productId: string | null; status: string; syncedAt: string | null; error: string | null; requirements: Array<{ field_reference?: string; reason_code?: string; status?: string }> }; restrictions: CreatorRestrictions };
 type Response = { items: Creator[]; total: number; limit: number; offset: number };
 function initials(value: string) { return value.split(/\s+/).map((part) => part[0]).filter(Boolean).slice(0, 2).join("").toUpperCase(); }
-function dateLabel(value: string) { return new Intl.DateTimeFormat("en-IN", { dateStyle: "medium" }).format(new Date(value)); }
 function age(value: string) { const days = Math.max(0, Math.floor((Date.now() - new Date(value).getTime()) / 86_400_000)); return days === 0 ? "Today" : days < 30 ? `${days} days` : days < 365 ? `${Math.floor(days / 30)} months` : `${Math.floor(days / 365)} years`; }
 function statusClass(status: string) { return status === "approved" ? "green" : status === "pending" || status === "needs_resubmission" ? "orange" : status === "rejected" ? "red" : ""; }
 

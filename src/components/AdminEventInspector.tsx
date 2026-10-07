@@ -3,6 +3,7 @@
 import { AlertTriangle, CheckCircle2, Clock3, RefreshCw, Search, Webhook } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { apiRequest } from "@/lib/api-client";
+import { timeLabel } from "./admin-shared";
 
 /**
  * Provider event inspector.
@@ -48,9 +49,6 @@ type ListResponse = {
 
 type DetailResponse = { event: EventRow & { payload: unknown } };
 
-function dateLabel(value: string) {
-  return new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
-}
 
 function relative(value: string | null) {
   if (!value) return "never";
@@ -65,6 +63,15 @@ function relative(value: string | null) {
 export default function AdminEventInspector() {
   const [data, setData] = useState<ListResponse | null>(null);
   const [detail, setDetail] = useState<DetailResponse["event"] | null>(null);
+
+  // Escape closes the drawer. It covers the table it was opened from, and a
+  // modal that only closes by mouse traps anyone working from the keyboard.
+  useEffect(() => {
+    if (!detail) return;
+    const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") setDetail(null); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [detail]);
   const [provider, setProvider] = useState("");
   const [eventType, setEventType] = useState("");
   const [status, setStatus] = useState("");
@@ -173,7 +180,7 @@ export default function AdminEventInspector() {
         <div className="stat">
           <label><CheckCircle2 size={12} /> Most recent</label>
           <strong>{relative(summary?.newestReceived ?? null)}</strong>
-          <small>{summary?.newestReceived ? dateLabel(summary.newestReceived) : "no events stored"}</small>
+          <small>{summary?.newestReceived ? timeLabel(summary.newestReceived) : "no events stored"}</small>
         </div>
       </div>
 
@@ -183,6 +190,7 @@ export default function AdminEventInspector() {
           <input
             type="search"
             value={search}
+            aria-label="Search provider events"
             placeholder="Paste an order id, payment id or event id"
             onChange={(event) => { setSearch(event.target.value); setOffset(0); }}
           />
@@ -229,7 +237,7 @@ export default function AdminEventInspector() {
                       </small>
                     </td>
                     <td><span className="pill">{row.provider}</span></td>
-                    <td><span>{dateLabel(row.receivedAt)}</span><small style={{ display: "block", marginTop: 4, color: "var(--muted)" }}>{relative(row.receivedAt)}</small></td>
+                    <td><span>{timeLabel(row.receivedAt)}</span><small style={{ display: "block", marginTop: 4, color: "var(--muted)" }}>{relative(row.receivedAt)}</small></td>
                     <td>
                       {row.processedAt
                         ? <span className="pill green">Processed</span>
@@ -257,8 +265,8 @@ export default function AdminEventInspector() {
       </section>
 
       {detail && (
-        <div className="drawer-scrim" role="dialog" aria-modal="true" aria-label="Event payload" onClick={() => setDetail(null)}>
-          <div className="drawer" onClick={(event) => event.stopPropagation()}>
+        <div className="drawer-scrim" onClick={() => setDetail(null)}>
+          <div className="drawer" role="dialog" aria-modal="true" aria-label="Event payload" onClick={(event) => event.stopPropagation()}>
             <div className="card-title">
               <div>
                 <p className="eyebrow">{detail.provider}</p>
@@ -268,8 +276,8 @@ export default function AdminEventInspector() {
               <button type="button" className="button" onClick={() => setDetail(null)} aria-label="Close">Close</button>
             </div>
             <div className="detail-grid">
-              <div className="detail"><label>Received</label><strong>{dateLabel(detail.receivedAt)}</strong></div>
-              <div className="detail"><label>Processed</label><strong>{detail.processedAt ? dateLabel(detail.processedAt) : "Not processed"}</strong></div>
+              <div className="detail"><label>Received</label><strong>{timeLabel(detail.receivedAt)}</strong></div>
+              <div className="detail"><label>Processed</label><strong>{detail.processedAt ? timeLabel(detail.processedAt) : "Not processed"}</strong></div>
             </div>
             {detail.processingError && (
               <div className="warn-box" style={{ marginTop: 16 }}>

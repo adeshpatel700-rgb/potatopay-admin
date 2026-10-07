@@ -3,6 +3,7 @@
 import { CheckCircle2, EyeOff, Lock, RefreshCw, Search, Send, Clock3 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { apiRequest, formatInr } from "@/lib/api-client";
+import { timeLabel } from "./admin-shared";
 
 type TicketStatus = "open" | "awaiting_creator" | "resolved";
 
@@ -43,9 +44,6 @@ const STATUS_FILTERS = [
   { value: "", label: "All" },
 ];
 
-function dateLabel(value: string) {
-  return new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
-}
 
 function waitingFor(value: string | null) {
   if (!value) return "—";
@@ -196,7 +194,7 @@ export default function AdminSupport() {
       <div className="filter-row">
         <label className="search-field">
           <Search size={14} />
-          <input type="search" value={search} placeholder="Reference, subject or @username" onChange={(event) => setSearch(event.target.value)} />
+          <input type="search" value={search} aria-label="Search support tickets" placeholder="Reference, subject or @username" onChange={(event) => setSearch(event.target.value)} />
         </label>
         {STATUS_FILTERS.map((option) => (
           <button
@@ -232,7 +230,7 @@ export default function AdminSupport() {
                     {row.reference} · @{row.creator.username} · {row.category} · {row.messageCount} message{row.messageCount === 1 ? "" : "s"}
                   </small>
                   <small>
-                    {row.status === "open" ? `waiting ${waitingFor(row.lastMessageAt)}` : dateLabel(row.lastMessageAt)}
+                    {row.status === "open" ? `waiting ${waitingFor(row.lastMessageAt)}` : timeLabel(row.lastMessageAt)}
                     {row.priority === "high" ? " · HIGH PRIORITY" : ""}
                     {row.unread ? " · unread" : ""}
                   </small>
@@ -289,7 +287,7 @@ export default function AdminSupport() {
                     <span className="bubble-meta">
                       {entry.internal && <><EyeOff size={11} /> Internal note · </>}
                       {entry.authorRole === "admin" ? `Support${entry.authorUsername ? ` (@${entry.authorUsername})` : ""}` : `@${detail.creator.username}`}
-                      {" · "}{dateLabel(entry.createdAt)}
+                      {" · "}{timeLabel(entry.createdAt)}
                     </span>
                     <p>{entry.body}</p>
                   </div>

@@ -48,7 +48,7 @@ function compactRupees(paise: number): string {
   if (rupeesValue >= 1000) return `₹${(rupeesValue / 1000).toFixed(1)}K`;
   return `₹${Math.round(rupeesValue)}`;
 }
-function dateLabel(value: string) {
+function dayLabel(value: string) {
   return new Intl.DateTimeFormat("en-IN", { dateStyle: "full", timeZone: "Asia/Kolkata" }).format(new Date(`${value}T00:00:00+05:30`));
 }
 function initials(value: string) {
@@ -197,7 +197,7 @@ export default function AdminDashboard() {
         <div>
           <p className="eyebrow">Command centre</p>
           <h1>Today at Potatopay</h1>
-          <p>{data ? dateLabel(data.reportDate) : "Loading today’s activity"}</p>
+          <p>{data ? dayLabel(data.reportDate) : "Loading today’s activity"}</p>
         </div>
         <div className="ov-head-actions">
           <div className="ov-range" role="group" aria-label="Date range">

@@ -42,7 +42,7 @@ export default function AdminUsers() {
         action={<button type="button" className="button" onClick={() => void reload()} disabled={loading}><RefreshCw size={14} />Refresh</button>}
       />
       {error && <div className="error" role="alert">{error}</div>}
-      {notice && <div className="error" role="status" style={{ background: "var(--green-tint)", color: "var(--green)", borderColor: "var(--green-line)" }}>{notice}</div>}
+      {notice && <div className="notice" role="status">{notice}</div>}
 
       <section className="card table-card">
         <div className="table-head">

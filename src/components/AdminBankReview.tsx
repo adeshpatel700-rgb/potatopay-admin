@@ -1,8 +1,9 @@
 "use client";
 
 import { AlertTriangle, Check, Download, ExternalLink, Landmark, RefreshCw, ShieldAlert, X } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { apiRequest, getApiUrl } from "@/lib/api-client";
+import { timeLabel } from "./admin-shared";
 
 /**
  * Bank account verification — the second half of creator payout approval.
@@ -45,9 +46,6 @@ const FILTERS: Array<{ value: string; label: string }> = [
   { value: "", label: "All" },
 ];
 
-function dateLabel(value: string) {
-  return new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
-}
 
 function statusClass(status: string) {
   return status === "approved" ? "green" : status === "pending" || status === "needs_resubmission" ? "orange" : status === "rejected" ? "red" : "";
@@ -68,16 +66,28 @@ export default function AdminBankReview() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
 
+  /**
+   * The newest filter wins.
+   *
+   * The status pills each fire a request, and a slow "pending" response
+   * arriving after a fast "approved" one listed pending accounts under the
+   * approved filter — the reviewer then acts on a row the screen says is
+   * already approved.
+   */
+  const requestId = useRef(0);
   const load = useCallback(async (status: string) => {
+    const token = ++requestId.current;
     setLoading(true);
     setError("");
     try {
       const response = await apiRequest<Response>(`/v1/admin/bank-accounts?limit=100${status ? `&status=${status}` : ""}`);
+      if (token !== requestId.current) return;
       setItems(response.items);
     } catch (requestError) {
+      if (token !== requestId.current) return;
       setError(requestError instanceof Error ? requestError.message : "Could not load bank accounts.");
     } finally {
-      setLoading(false);
+      if (token === requestId.current) setLoading(false);
     }
   }, []);
 
@@ -181,7 +191,7 @@ export default function AdminBankReview() {
                 >
                   <strong>{item.creator.displayName || item.creator.username}</strong>
                   <small>
-                    @{item.creator.username} · {item.bankName} {item.accountNumber} · {dateLabel(item.submittedAt)}
+                    @{item.creator.username} · {item.bankName} {item.accountNumber} · {timeLabel(item.submittedAt)}
                   </small>
                   {item.duplicateClaims > 0 && (
                     <small style={{ color: "var(--red)", fontWeight: 700 }}>
@@ -238,7 +248,7 @@ export default function AdminBankReview() {
                 <div className="detail"><label>Bank</label><strong>{selected.bankName}</strong></div>
                 <div className="detail"><label>Branch</label><strong>{selected.branchName || "Not given"}</strong></div>
                 <div className="detail"><label>Account type</label><strong>{selected.accountType}</strong></div>
-                <div className="detail"><label>Submitted</label><strong>{dateLabel(selected.submittedAt)}</strong></div>
+                <div className="detail"><label>Submitted</label><strong>{timeLabel(selected.submittedAt)}</strong></div>
                 <div className="detail"><label>Identity KYC</label><strong>{selected.creator.kycStatus.replaceAll("_", " ")}</strong></div>
               </div>
 

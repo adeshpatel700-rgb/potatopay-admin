@@ -32,6 +32,17 @@ export function sinceLabel(value: string | null): string {
   return `${Math.floor(minutes / 1440)}d ago`;
 }
 
+/**
+ * Whether a timestamp is older than `maxAgeMs`.
+ *
+ * Reads the clock, so — like sinceLabel — it settles when its input does and
+ * not on an unrelated re-render.
+ */
+export function isStale(value: string | null, maxAgeMs: number): boolean {
+  if (!value) return true;
+  return Date.now() - new Date(value).getTime() > maxAgeMs;
+}
+
 export function rupees(paise: number): string {
   return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format(paise / 100);
 }

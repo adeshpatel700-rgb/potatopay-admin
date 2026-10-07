@@ -1,7 +1,7 @@
 "use client";
 
 import { Activity, AlertTriangle, Clock, RefreshCw, Webhook } from "lucide-react";
-import { StatRow, sinceLabel, timeLabel, useResource } from "./admin-shared";
+import { StatRow, isStale, sinceLabel, timeLabel, useResource } from "./admin-shared";
 import { PageHead } from "./admin-shared";
 
 type Response = {
@@ -21,7 +21,7 @@ type Response = {
  */
 export default function AdminWebhooks() {
   const { data, loading, error, reload } = useResource<Response>("/v1/admin/webhooks", "Could not load webhook health.");
-  const quiet = data ? Date.now() - new Date(data.volume.newest ?? 0).getTime() > 86_400_000 : false;
+  const quiet = data ? isStale(data.volume.newest, 86_400_000) : false;
 
   return (
     <div>
@@ -43,7 +43,7 @@ export default function AdminWebhooks() {
       )}
 
       {quiet && (
-        <div className="error" role="status">
+        <div className="warn" role="status">
           Nothing has arrived in over 24 hours. If payments are being taken, the webhook URL or its secret is wrong —
           check the endpoint in the Razorpay dashboard before assuming it is quiet because nobody tipped.
         </div>

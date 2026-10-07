@@ -3,6 +3,7 @@
 import { AlertTriangle, Ban, CheckCircle2, CircleSlash, Link2, PauseCircle, PlayCircle, RefreshCw, RotateCcw, Wallet, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { apiRequest } from "@/lib/api-client";
+import { timeLabel } from "./admin-shared";
 
 /**
  * The four switches an administrator has over one creator account.
@@ -42,9 +43,6 @@ type SettlementState = {
 
 const RESTRICTING: ReadonlySet<AdminAction> = new Set(["pause_plan", "hold_page", "hold_payouts", "deactivate"]);
 
-function dateLabel(value: string) {
-  return new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
-}
 
 function daysSince(value: string) {
   const days = Math.floor((Date.now() - new Date(value).getTime()) / 86_400_000);
@@ -81,6 +79,7 @@ export default function AdminCreatorControls({
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [events, setEvents] = useState<EventRow[]>([]);
+  const [eventsState, setEventsState] = useState<"loading" | "ready" | "failed">("loading");
   const [confirmingDeactivate, setConfirmingDeactivate] = useState(false);
   const [settlement, setSettlement] = useState<SettlementState>({
     status: creator.settlement.status,
@@ -149,16 +148,22 @@ export default function AdminCreatorControls({
   }
 
   const loadEvents = useCallback(async () => {
+    setEventsState("loading");
     try {
       const response = await apiRequest<{ items: EventRow[] }>(`/v1/admin/creators/${creator.id}/events`);
       setEvents(response.items);
+      setEventsState("ready");
     } catch {
-      // History is context, not the job. Its absence must not block an action.
+      // History is context, not the job: its absence must not block an action.
+      // But it must not be reported as an empty history either — "no actions
+      // on this account" is a claim, and a failed fetch cannot make it.
+      setEventsState("failed");
     }
   }, [creator.id]);
 
   useEffect(() => {
-    void loadEvents();
+    const timer = window.setTimeout(() => void loadEvents(), 0);
+    return () => window.clearTimeout(timer);
   }, [loadEvents]);
 
   // Escape closes, because this panel covers the table it was opened from.
@@ -409,7 +414,7 @@ export default function AdminCreatorControls({
                   <span className={`pill ${isActive ? "red" : "green"}`}>{isActive ? "Restricted" : "Active"}</span>
                   <small>{control.consequence}</small>
                   {isActive && control.active && (
-                    <small className="control-since">In place {daysSince(control.active)} · since {dateLabel(control.active)}</small>
+                    <small className="control-since">In place {daysSince(control.active)} · since {timeLabel(control.active)}</small>
                   )}
                 </div>
                 {isActive ? (
@@ -452,7 +457,11 @@ export default function AdminCreatorControls({
 
         <div className="event-log">
           <strong>Action history</strong>
-          {events.length === 0 ? (
+          {eventsState === "loading" ? (
+            <small>Loading history…</small>
+          ) : eventsState === "failed" ? (
+            <small>Could not load the history. The actions above still work.</small>
+          ) : events.length === 0 ? (
             <small>No administrative actions on this account.</small>
           ) : (
             <ul>
@@ -460,7 +469,7 @@ export default function AdminCreatorControls({
                 <li key={event.id}>
                   <span className="pill">{event.action.replaceAll("_", " ")}</span>
                   <small>
-                    {dateLabel(event.createdAt)}
+                    {timeLabel(event.createdAt)}
                     {event.actor ? ` · by @${event.actor}` : ""}
                     {event.reason ? ` · ${event.reason}` : ""}
                   </small>
