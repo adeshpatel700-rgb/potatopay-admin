@@ -2,7 +2,7 @@
 
 import { AlertTriangle, ArrowDownToLine, Coins, Download, Receipt, RefreshCw, Wallet } from "lucide-react";
 import { useState } from "react";
-import { getApiUrl } from "@/lib/api-client";
+import { fetchWithTimeout, getApiUrl } from "@/lib/api-client";
 import { PageHead, Pager, StatRow, rupees, statusClass, timeLabel, useResource } from "./admin-shared";
 
 type Row = {
@@ -45,7 +45,7 @@ export default function AdminTransactions() {
     try {
       const params = new URLSearchParams({ status, transfer });
       if (applied) params.set("q", applied);
-      const response = await fetch(getApiUrl(`/v1/admin/transactions/export?${params.toString()}`), { credentials: "include" });
+      const response = await fetchWithTimeout(getApiUrl(`/v1/admin/transactions/export?${params.toString()}`), { credentials: "include" });
       if (!response.ok) throw new Error(response.status === 401 ? "Your session has ended. Please sign in again." : "Could not export transactions.");
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);

@@ -1,7 +1,45 @@
 const DEVELOPMENT_API_URL = "http://localhost:4000";
+export const API_REQUEST_TIMEOUT_MS = 15_000;
+
+export class ApiRequestTimeoutError extends Error {
+  constructor(message = "The request took too long. Please try again.") {
+    super(message);
+    this.name = "ApiRequestTimeoutError";
+  }
+}
 
 export class ApiRequestError extends Error {
   constructor(message: string, public readonly status: number) { super(message); this.name = "ApiRequestError"; }
+}
+
+export async function fetchWithTimeout(
+  input: RequestInfo | URL,
+  init: RequestInit = {},
+  timeoutMs = API_REQUEST_TIMEOUT_MS,
+): Promise<Response> {
+  const controller = new AbortController();
+  let timedOut = false;
+  const timeout = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, timeoutMs);
+  const callerSignal = init.signal;
+  const abortFromCaller = () => controller.abort();
+
+  if (callerSignal) {
+    if (callerSignal.aborted) controller.abort();
+    else callerSignal.addEventListener("abort", abortFromCaller, { once: true });
+  }
+
+  try {
+    return await fetch(input, { ...init, signal: controller.signal });
+  } catch (error) {
+    if (timedOut) throw new ApiRequestTimeoutError();
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+    callerSignal?.removeEventListener("abort", abortFromCaller);
+  }
 }
 
 export function getApiUrl(path: `/${string}`): string {
@@ -14,8 +52,12 @@ export async function apiRequest<T>(path: `/${string}`, init: RequestInit = {}):
   const headers = new Headers(init.headers);
   if (typeof init.body === "string" && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
   let response: Response;
-  try { response = await fetch(getApiUrl(path), { ...init, headers, credentials: "include" }); }
-  catch { throw new ApiRequestError("Could not reach the Potatopay API.", 0); }
+  try {
+    response = await fetchWithTimeout(getApiUrl(path), { ...init, headers, credentials: "include" });
+  } catch (error) {
+    if (error instanceof ApiRequestTimeoutError) throw new ApiRequestError(error.message, 408);
+    throw new ApiRequestError("Could not reach the Potatopay API.", 0);
+  }
   const payload: unknown = await response.json().catch(() => null);
   if (!response.ok) {
     const message = typeof payload === "object" && payload !== null && "error" in payload && typeof payload.error === "string" ? payload.error : fallbackErrorMessage(response.status);
