@@ -1,7 +1,8 @@
 "use client";
 
-import { AlertTriangle, ArrowDownToLine, Coins, Receipt, RefreshCw, Wallet } from "lucide-react";
+import { AlertTriangle, ArrowDownToLine, Coins, Download, Receipt, RefreshCw, Wallet } from "lucide-react";
 import { useState } from "react";
+import { getApiUrl } from "@/lib/api-client";
 import { PageHead, Pager, StatRow, rupees, statusClass, timeLabel, useResource } from "./admin-shared";
 
 type Row = {
@@ -29,6 +30,8 @@ export default function AdminTransactions() {
   const [transfer, setTransfer] = useState("");
   const [query, setQuery] = useState("");
   const [applied, setApplied] = useState("");
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState("");
   const limit = 25;
 
   const { data, loading, error, reload } = useResource<Response>(
@@ -36,15 +39,40 @@ export default function AdminTransactions() {
     "Could not load transactions.",
   );
 
+  async function exportCsv() {
+    setExporting(true);
+    setExportError("");
+    try {
+      const params = new URLSearchParams({ status, transfer });
+      if (applied) params.set("q", applied);
+      const response = await fetch(getApiUrl(`/v1/admin/transactions/export?${params.toString()}`), { credentials: "include" });
+      if (!response.ok) throw new Error(response.status === 401 ? "Your session has ended. Please sign in again." : "Could not export transactions.");
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `potatopay-transactions-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+    } catch (requestError) {
+      setExportError(requestError instanceof Error ? requestError.message : "Could not export transactions.");
+    } finally {
+      setExporting(false);
+    }
+  }
+
   return (
     <div>
       <PageHead
         eyebrow="Money"
         title="Transactions"
         blurb="Every payment, what was withheld for fees, and whether the creator's share actually moved."
-        action={<button type="button" className="button" onClick={() => void reload()} disabled={loading}><RefreshCw size={14} />Refresh</button>}
+        action={<div className="filter-row"><button type="button" className="button" onClick={() => void exportCsv()} disabled={exporting}><Download size={14} />{exporting ? "Preparing…" : "Export CSV"}</button><button type="button" className="button" onClick={() => void reload()} disabled={loading}><RefreshCw size={14} />Refresh</button></div>}
       />
       {error && <div className="error" role="alert">{error}</div>}
+      {exportError && <div className="error" role="alert">{exportError}</div>}
 
       {data && (
         <StatRow stats={[

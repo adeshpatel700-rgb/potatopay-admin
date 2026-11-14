@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://potatopay-adesh.duckdns.org/api/:path*"
+    }
+  ]
+}

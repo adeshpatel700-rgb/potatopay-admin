@@ -1,9 +1,9 @@
 "use client";
 
-import { AlertTriangle, Check, Download, ExternalLink, RefreshCw, X } from "lucide-react";
+import { AlertTriangle, Check, Download, ExternalLink, RefreshCw, Search, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { apiRequest, getApiUrl } from "@/lib/api-client";
-import { timeLabel } from "./admin-shared";
+import { Pager, timeLabel } from "./admin-shared";
 
 type KycDocumentType = "pan" | "aadhaar" | "aadhaar_front" | "aadhaar_back";
 type RiskStatus = "clear" | "flagged" | "cleared";
@@ -28,9 +28,9 @@ type Document = {
   validationStatus: "clear" | "flagged";
   validationFlags: RiskFlag[];
 };
-type ListResponse = { items: Submission[]; total: number };
+type ListResponse = { items: Submission[]; total: number; limit: number; offset: number };
 type DetailResponse = { submission: Submission; documents: Document[] };
-type Queue = "pending" | "flagged";
+type Queue = "pending" | "flagged" | "history";
 
 function documentLabel(type: KycDocumentType) {
   if (type === "pan") return "PAN";
@@ -49,6 +49,10 @@ function riskLabel(code: string) {
 export default function AdminKycPage() {
   const [queue, setQueue] = useState<Queue>("pending");
   const [items, setItems] = useState<Submission[]>([]);
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
+  const [query, setQuery] = useState("");
+  const [appliedQuery, setAppliedQuery] = useState("");
   const [selected, setSelected] = useState<DetailResponse | null>(null);
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(true);
@@ -60,17 +64,19 @@ export default function AdminKycPage() {
     setLoading(true);
     setError("");
     try {
-      const params = new URLSearchParams({ limit: "100", status: "pending" });
+      const params = new URLSearchParams({ limit: "25", offset: String(offset), queue });
       if (queue === "flagged") params.set("risk", "flagged");
+      if (appliedQuery) params.set("q", appliedQuery);
       const response = await apiRequest<ListResponse>(`/v1/admin/kyc?${params.toString()}`);
       setItems(response.items);
+      setTotal(response.total);
       setSelected(null);
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "Could not load KYC submissions.");
     } finally {
       setLoading(false);
     }
-  }, [queue]);
+  }, [appliedQuery, offset, queue]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => void load(), 0);
@@ -131,14 +137,22 @@ export default function AdminKycPage() {
       {notice && <div className="notice" role="status">{notice}</div>}
 
       <div className="queue-tabs" role="tablist" aria-label="KYC queues">
-        <button type="button" role="tab" aria-selected={queue === "pending"} className={queue === "pending" ? "active" : ""} onClick={() => setQueue("pending")}>Pending review</button>
-        <button type="button" role="tab" aria-selected={queue === "flagged"} className={queue === "flagged" ? "active flagged" : "flagged"} onClick={() => setQueue("flagged")}><AlertTriangle size={14} /> Flagged cases</button>
+        <button type="button" role="tab" aria-selected={queue === "pending"} className={queue === "pending" ? "active" : ""} onClick={() => { setQueue("pending"); setOffset(0); }}>Pending review</button>
+        <button type="button" role="tab" aria-selected={queue === "flagged"} className={queue === "flagged" ? "active flagged" : "flagged"} onClick={() => { setQueue("flagged"); setOffset(0); }}><AlertTriangle size={14} /> Flagged cases</button>
+        <button type="button" role="tab" aria-selected={queue === "history"} className={queue === "history" ? "active" : ""} onClick={() => { setQueue("history"); setOffset(0); }}>Review history</button>
+      </div>
+
+      <div className="filter-row" style={{ marginBottom: 18 }}>
+        <Search size={16} aria-hidden="true" />
+        <input value={query} onChange={(event) => setQuery(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { setAppliedQuery(query.trim()); setOffset(0); } }} placeholder="Search creator, username, or email" aria-label="Search KYC submissions" />
+        <button type="button" className="button" onClick={() => { setAppliedQuery(query.trim()); setOffset(0); }} disabled={loading}>Search</button>
       </div>
 
       <div className="kyc-layout">
         <section className="card">
-          <div className="card-title"><h2>{queue === "flagged" ? "Flagged pending submissions" : "Pending submissions"}</h2><span className={`pill ${queue === "flagged" ? "red" : "orange"}`}>{items.length}</span></div>
-          {loading ? <div className="loading">Loading queue…</div> : items.length === 0 ? <div className="empty">{queue === "flagged" ? "No flagged pending submissions." : "No pending KYC submissions."}</div> : <div className="queue-list">{items.map((item) => <button type="button" className={`queue-item ${selected?.submission.id === item.id ? "selected" : ""}`} key={item.id} onClick={() => void openSubmission(item.id)}><span className="queue-item-head"><strong>{item.creator.displayName}</strong>{item.riskStatus === "flagged" && <span className="pill red"><AlertTriangle size={11} /> flagged</span>}</span><small>@{item.creator.username} · {item.panMasked} · {timeLabel(item.submittedAt)}</small></button>)}</div>}
+          <div className="card-title"><h2>{queue === "flagged" ? "Flagged pending submissions" : queue === "history" ? "Completed reviews" : "Pending submissions"}</h2><span className={`pill ${queue === "flagged" ? "red" : queue === "history" ? "green" : "orange"}`}>{total}</span></div>
+          {loading ? <div className="loading">Loading queue…</div> : items.length === 0 ? <div className="empty">{queue === "flagged" ? "No flagged pending submissions." : queue === "history" ? "No completed reviews found." : "No pending KYC submissions."}</div> : <div className="queue-list">{items.map((item) => <button type="button" className={`queue-item ${selected?.submission.id === item.id ? "selected" : ""}`} key={item.id} onClick={() => void openSubmission(item.id)}><span className="queue-item-head"><strong>{item.creator.displayName}</strong>{item.riskStatus === "flagged" && <span className="pill red"><AlertTriangle size={11} /> flagged</span>}</span><small>@{item.creator.username} · {item.panMasked} · {timeLabel(item.submittedAt)}</small></button>)}</div>}
+          <Pager offset={offset} limit={25} total={total} shown={items.length} onChange={setOffset} disabled={loading} />
         </section>
 
         <section className="card">
@@ -155,7 +169,7 @@ export default function AdminKycPage() {
             <div className="document-review"><label>DOCUMENTS</label><div className="doc-list">{selected.documents.map((document) => <div className="doc-row" key={document.type}><button type="button" className="button" onClick={() => openDocument(document.type)}><Download size={14} />{documentLabel(document.type)} · {document.filename}</button>{document.validationStatus === "flagged" && <span className="pill red"><AlertTriangle size={11} /> {document.validationFlags.length} signal{document.validationFlags.length === 1 ? "" : "s"}</span>}</div>)}</div></div>
 
             <label className="review-reason">Review reason <span>(required for rejection or resubmission)</span><textarea className="reason" rows={3} value={reason} onChange={(event) => setReason(event.target.value.slice(0, 1000))} /></label>
-            <div className="review-actions"><button type="button" className="button approve" disabled={busy} onClick={() => void review("approved")}><Check size={14} />Approve</button><button type="button" className="button" disabled={busy} onClick={() => void review("needs_resubmission")}><ExternalLink size={14} />Request resubmission</button><button type="button" className="button reject" disabled={busy} onClick={() => void review("rejected")}><X size={14} />Reject</button></div>
+            {(selected.submission.status === "pending" || selected.submission.status === "needs_resubmission") && <div className="review-actions"><button type="button" className="button approve" disabled={busy} onClick={() => void review("approved")}><Check size={14} />Approve</button><button type="button" className="button" disabled={busy} onClick={() => void review("needs_resubmission")}><ExternalLink size={14} />Request resubmission</button><button type="button" className="button reject" disabled={busy} onClick={() => void review("rejected")}><X size={14} />Reject</button></div>}
           </>}
         </section>
       </div>

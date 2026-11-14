@@ -1,6 +1,6 @@
 "use client";
 
-import { Database, RefreshCw, Settings as SettingsIcon, ShieldCheck, Users, Wallet } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Database, RefreshCw, Settings as SettingsIcon, ShieldCheck, Users, Wallet } from "lucide-react";
 import { PageHead, StatRow, useResource } from "./admin-shared";
 
 type Response = {
@@ -9,6 +9,12 @@ type Response = {
   route: { businessType: string; category: string; subcategory: string; addressCity: string; addressState: string; addressPostalCode: string };
   overlay: { soundPacks: string[] };
   database: { schemaVersion: number; creators: number; payments: number; webhookEvents: number; dataEpoch: string | null };
+};
+type HealthResponse = {
+  generatedAt: string;
+  database: { status: string; latencyMs: number; schemaVersion: number };
+  webhookQueue: { pending: number; terminalFailures: number; oldestAt: string | null; oldestAgeMinutes: number };
+  transferRecovery: { due: number; terminalFailures: number; oldestAt: string | null; oldestAgeMinutes: number };
 };
 
 function Rows({ items }: { items: Array<{ label: string; value: React.ReactNode; note?: string }> }) {
@@ -38,7 +44,9 @@ function Rows({ items }: { items: Array<{ label: string; value: React.ReactNode;
  */
 export default function AdminSettings() {
   const { data, loading, error, reload } = useResource<Response>("/v1/admin/settings", "Could not load settings.");
+  const health = useResource<HealthResponse>("/v1/admin/system-health", "Could not load operational health.");
   const live = data?.environment.razorpayMode === "live";
+  const healthProblem = Boolean(health.data && (health.data.webhookQueue.pending > 0 || health.data.webhookQueue.terminalFailures > 0 || health.data.transferRecovery.due > 0 || health.data.transferRecovery.terminalFailures > 0));
 
   return (
     <div>
@@ -49,6 +57,7 @@ export default function AdminSettings() {
         action={<button type="button" className="button" onClick={() => void reload()} disabled={loading}><RefreshCw size={14} />Refresh</button>}
       />
       {error && <div className="error" role="alert">{error}</div>}
+      {health.error && <div className="error" role="alert">{health.error}</div>}
       {loading && <div className="loading">Loading configuration…</div>}
 
       {data && (
@@ -108,6 +117,18 @@ export default function AdminSettings() {
                   : "No cutoff set: the console counts every row ever written, including pre-launch test data.",
               },
             ]} />
+          </section>
+
+          <section className="card table-card" style={{ marginTop: 18 }}>
+            <div className="table-head">
+              <strong>{healthProblem ? <AlertTriangle size={16} /> : <CheckCircle2 size={16} />} Operational health</strong>
+              <button type="button" className="button" onClick={() => void health.reload()} disabled={health.loading}><RefreshCw size={14} />Refresh health</button>
+            </div>
+            {health.loading && !health.data ? <div className="loading">Checking database and durable queues…</div> : health.data ? <Rows items={[
+              { label: "Database", value: <span className={`pill ${health.data.database.status === "ok" ? "green" : "red"}`}>{health.data.database.status} · {health.data.database.latencyMs} ms</span>, note: `Schema ${health.data.database.schemaVersion}` },
+              { label: "Webhook worker queue", value: <span className={`pill ${health.data.webhookQueue.pending || health.data.webhookQueue.terminalFailures ? "orange" : "green"}`}>{health.data.webhookQueue.pending} pending · {health.data.webhookQueue.terminalFailures} terminal failures</span>, note: health.data.webhookQueue.oldestAt ? `Oldest item ${health.data.webhookQueue.oldestAgeMinutes} minutes old` : "No durable webhook backlog" },
+              { label: "Transfer recovery", value: <span className={`pill ${health.data.transferRecovery.due || health.data.transferRecovery.terminalFailures ? "orange" : "green"}`}>{health.data.transferRecovery.due} due · {health.data.transferRecovery.terminalFailures} terminal failures</span>, note: health.data.transferRecovery.oldestAt ? `Oldest item ${health.data.transferRecovery.oldestAgeMinutes} minutes old` : "No recovery backlog" },
+            ]} /> : <div className="empty">No health snapshot available.</div>}
           </section>
         </>
       )}

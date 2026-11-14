@@ -219,7 +219,14 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {error && <div className="error" role="alert">{error}</div>}
+      {error && (
+        <div className="error error-row" role="alert">
+          <span>{error}</span>
+          <button type="button" className="button" onClick={() => void load()} disabled={loading}>
+            <RefreshCw size={14} />Try again
+          </button>
+        </div>
+      )}
 
       {loading && !data ? (
         <div className="card loading">Loading the overview…</div>
