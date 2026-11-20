@@ -19,7 +19,7 @@ type Response = {
 const STATUSES = ["", "captured", "authorized", "created", "failed", "refunded", "cancelled"];
 const TRANSFERS = [
   { value: "", label: "Any transfer state" },
-  { value: "stuck", label: "Captured, not transferred" },
+  { value: "stuck", label: "Awaiting transfer" },
   { value: "sent", label: "Transferred" },
   { value: "failed", label: "Transfer failed" },
 ];
@@ -82,7 +82,7 @@ export default function AdminTransactions() {
           { label: "Transferred to creators", value: rupees(data.totals.transferredPaise), icon: ArrowDownToLine },
           // The number that matters: money the platform holds and the creator
           // has not been paid. Coloured only when it is not zero.
-          { label: "Stuck, not transferred", value: data.totals.stuckCount.toLocaleString("en-IN"), tone: data.totals.stuckCount > 0 ? "red" : "green", icon: AlertTriangle },
+          { label: "Awaiting transfer", value: data.totals.stuckCount.toLocaleString("en-IN"), tone: data.totals.stuckCount > 0 ? "orange" : "green", icon: AlertTriangle },
         ]} />
       )}
 
@@ -125,7 +125,9 @@ export default function AdminTransactions() {
                       {row.transferId
                         ? <><span className={`pill ${statusClass(row.transferStatus ?? "sent")}`}>{row.transferStatus ?? "sent"}</span><small style={{ display: "block", marginTop: 4, color: "var(--muted)" }}>{row.transferId}</small></>
                         : row.status === "captured"
-                          ? <span className="pill red"><AlertTriangle size={11} /> not transferred</span>
+                          ? row.transferStatus === "failed"
+                            ? <span className="pill red"><AlertTriangle size={11} /> transfer failed</span>
+                            : <span className="pill orange">awaiting transfer</span>
                           : <span className="pill">—</span>}
                     </td>
                   </tr>

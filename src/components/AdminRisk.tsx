@@ -46,10 +46,10 @@ export default function AdminRisk() {
 
       {data && (
         <>
-          <Panel icon={Wallet} title="Money captured but not transferred" note="Creator has not been paid" empty={data.stuckTransfers.length === 0}>
+          <Panel icon={Wallet} title="Captured, transfer not confirmed" note="No Route transfer recorded yet" empty={data.stuckTransfers.length === 0}>
             <table><caption className="sr-only">Stuck transfers</caption>
               <thead><tr><th>Creator</th><th>Payments</th><th>Value</th></tr></thead>
-              <tbody>{data.stuckTransfers.map((row) => <tr key={row.username}><td><strong>@{row.username}</strong></td><td><span className="pill red">{row.count}</span></td><td className="amount">{rupees(row.paise)}</td></tr>)}</tbody>
+              <tbody>{data.stuckTransfers.map((row) => <tr key={row.username}><td><strong>@{row.username}</strong></td><td><span className="pill orange">{row.count}</span></td><td className="amount">{rupees(row.paise)}</td></tr>)}</tbody>
             </table>
           </Panel>
 

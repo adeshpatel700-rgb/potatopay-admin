@@ -117,9 +117,9 @@ function NavContent({ close }: { close?: () => void }) {
               return (
                 <Link key={href} href={href} onClick={close} className={`nav-link ${active ? "active" : ""}`} aria-current={active ? "page" : undefined}>
                   <Icon size={17} />{label}
-                  {/* Stuck money is red wherever it appears; a review queue is
-                      merely waiting, so it stays neutral. */}
-                  {count > 0 && <span className={`nav-badge ${badge === "stuckTransfers" ? "red" : ""}`}>{count > 99 ? "99+" : count}</span>}
+                  {/* An unconfirmed transfer is amber, not red: it needs a look,
+                      it is not a failure. A review queue stays neutral. */}
+                  {count > 0 && <span className={`nav-badge ${badge === "stuckTransfers" ? "orange" : ""}`}>{count > 99 ? "99+" : count}</span>}
                 </Link>
               );
             })}

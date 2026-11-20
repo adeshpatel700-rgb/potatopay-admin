@@ -111,6 +111,7 @@ button { cursor: pointer; }
 .nav-badge { margin-left: auto; min-width: 20px; padding: 1px 6px; border-radius: 999px; background: var(--chip); color: var(--muted); font-size: 10.5px; font-weight: 700; text-align: center; }
 .nav-link.active .nav-badge { background: rgb(192 103 43 / 14%); color: var(--accent); }
 .nav-badge.red { background: var(--red-tint); color: var(--red); }
+.nav-badge.orange { background: var(--orange-tint); color: var(--orange); }
 .logout { width: 100%; }
 .main { min-width: 0; flex: 1; display: flex; flex-direction: column; }
 .content { width: min(1320px, 100%); margin: 0 auto; padding: 28px 32px 64px; }
@@ -291,7 +292,7 @@ th { letter-spacing: .12em; }
 .ov-panel { box-shadow: 0 1px 2px rgb(33 28 22 / 4%), 0 8px 22px rgb(33 28 22 / 3%); }
 .ov-panel-head .view-link { color: var(--accent-deep); }
 .ov-panel-head .view-link:hover { color: var(--accent); }
-.ov-queue-item.live { box-shadow: inset 3px 0 0 var(--red); }
+.ov-queue-item.live { box-shadow: inset 3px 0 0 var(--orange); }
 .queue-item:hover { border-color: var(--line-hover); background: #fffaf3; box-shadow: var(--shadow); }
 .queue-item.selected { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-tint); }
 .detail { border-radius: 9px; }
@@ -583,9 +584,9 @@ th { letter-spacing: .12em; }
 .ov-queue-count { font-size: 17px; font-weight: 700; color: var(--faint); font-variant-numeric: proportional-nums; }
 /* A queue with work in it earns colour; an empty one stays quiet, so a red
    number always means something rather than being permanent decoration. */
-.ov-queue-item.live { border-color: rgb(168 57 44 / 28%); background: var(--red-tint); }
-.ov-queue-item.live .ov-queue-chip { background: rgb(168 57 44 / 12%); color: var(--red); }
-.ov-queue-item.live .ov-queue-count { color: var(--red); }
+.ov-queue-item.live { border-color: var(--orange-line); background: var(--orange-tint); }
+.ov-queue-item.live .ov-queue-chip { background: rgb(161 96 26 / 12%); color: var(--orange); }
+.ov-queue-item.live .ov-queue-count { color: var(--orange); }
 
 .ov-clear { display: grid; justify-items: center; gap: 6px; padding: 38px 16px 34px; text-align: center; color: var(--muted); }
 .ov-clear svg { color: var(--green); }

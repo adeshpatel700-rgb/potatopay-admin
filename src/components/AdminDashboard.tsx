@@ -293,13 +293,13 @@ export default function AdminDashboard() {
                 <div className="ov-clear">
                   <CheckCircle2 size={26} />
                   <strong>All clear</strong>
-                  <span>No reviews waiting, no stuck transfers, no open tickets.</span>
+                  <span>No reviews waiting, no transfers waiting, no open tickets.</span>
                 </div>
               ) : (
                 <div className="ov-queue">
                   <QueueRow href="/kyc" icon={IdCard} label="KYC review" count={queues?.kycReview ?? 0} hint="Identity documents waiting" />
                   <QueueRow href="/bank" icon={Banknote} label="Bank review" count={queues?.bankReview ?? 0} hint="Accounts waiting to be verified" />
-                  <QueueRow href="/risk" icon={AlertTriangle} label="Stuck transfers" count={queues?.stuckTransfers ?? 0} hint="Captured money that never reached a creator" />
+                  <QueueRow href="/risk" icon={AlertTriangle} label="Awaiting transfer" count={queues?.stuckTransfers ?? 0} hint="Captured tips with no Route transfer recorded yet" />
                   <QueueRow href="/support" icon={LifeBuoy} label="Support tickets" count={queues?.support ?? 0} hint="Open conversations" />
                 </div>
               )}
